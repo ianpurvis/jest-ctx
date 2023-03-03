@@ -2,6 +2,12 @@ import * as _jest from '@jest/globals'
 
 export const stack = new Array()
 
+function popContext(expected) {
+  if (stack.pop() != expected) {
+    throw new Error('Context stack corrupted')
+  }
+}
+
 export function afterAll(block) {
   let prev
   _jest.afterAll(async () => {
@@ -25,10 +31,7 @@ export function beforeAll(block) {
     next = await block(prev) || prev
     stack.push(next)
   })
-  _jest.afterAll(() => {
-    stack.pop()
-    // TODO verify next is popped to catch stack corruption
-  })
+  _jest.afterAll(() => popContext(next))
 }
 
 export function beforeEach(block) {
@@ -38,10 +41,7 @@ export function beforeEach(block) {
     next = await block(prev) || prev
     stack.push(next)
   })
-  _jest.afterEach(() => {
-    stack.pop()
-    // TODO verify next is popped to catch stack corruption
-  })
+  _jest.afterEach(() => popContext(next))
 }
 
 export function describe(title, block) {
@@ -53,9 +53,7 @@ export function describe(title, block) {
       stack.push(next)
     })
     block()
-    _jest.afterAll(() => {
-      stack.pop()
-    })
+    _jest.afterAll(() => popContext(next))
   })
 }
 
