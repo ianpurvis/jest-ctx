@@ -1,6 +1,7 @@
 import * as _jest from '@jest/globals'
 
-export const stack = [{}]
+export const rootContext = {}
+export const stack = [rootContext]
 
 function getContext() {
   return stack.at(-1)

@@ -1,94 +1,83 @@
-import { afterAll, afterEach, beforeAll, beforeEach, it, stack } from '../src/index.js'
+import { afterAll, afterEach, beforeAll, beforeEach, it, rootContext, stack } from '../src/index.js'
 import { generate } from 'randomstring'
 
 const fakeContext = () => ({ key: generate() })
 
-describe('import scope', () => {
+describe('describe', () => {
 
-  it('initializes stack with an empty context', () => {
-    expect(stack.length).toEqual(1)
-    expect(stack.at(-1)).toEqual({})
+  it('does not mutate the stack', (context) => {
+    expect(stack).toHaveLength(1)
+    expect(stack[0]).toBe(rootContext)
+    expect(context).toBe(rootContext)
   })
 
-  describe('describe', () => {
+  it('runs tests with the current context', (context) => {
+    expect(context).toBe(rootContext)
+  })
 
-    it('does not mutate the stack', () => {
-      expect(stack.length).toEqual(1)
-      expect(stack.at(-1)).toEqual({})
+  describe('given a beforeAll hook', () => {
+    let received, accumulated = fakeContext()
+
+    beforeAll((context) => {
+      received = context
+      return accumulated
     })
 
-    it('runs tests with the current context', (context) => {
-      expect(context).toBe(stack.at(-1))
+    it('runs the hook with the current context', () => {
+      expect(received).toBe(rootContext)
     })
 
-    describe('given a beforeAll hook', () => {
-      let prevContext, nextContext = fakeContext()
+    it('pushes the returned context onto the stack', (context) => {
+      expect(stack).toHaveLength(2)
+      expect(stack[0]).toBe(rootContext)
+      expect(stack[1]).toBe(accumulated)
+      expect(context).toBe(accumulated)
+    })
+  })
 
-      beforeAll((context) => {
-        prevContext = context
-        return nextContext
-      })
+  describe('given a beforeEach hook', () => {
+    let received, accumulated = fakeContext()
 
-      it('runs the hook with the current context', () => {
-        expect(prevContext).toBe(stack.at(0))
-      })
-
-      it('pushes the returned context onto the stack', () => {
-        expect(stack.length).toEqual(2)
-        expect(stack.at(-1)).toBe(nextContext)
-      })
-
-      it('runs tests with the returned context', (context) => {
-        expect(context).toBe(nextContext)
-      })
+    beforeEach((context) => {
+      received = context
+      return accumulated
     })
 
-    describe('given a beforeEach hook', () => {
-      let prevContext, nextContext = fakeContext()
-
-      beforeEach((context) => {
-        prevContext = context
-        return nextContext
-      })
-
-      it('runs the hook with the current context', () => {
-        expect(prevContext).toBe(stack.at(0))
-      })
-
-      it('pushes the returned context onto the stack', () => {
-        expect(stack.length).toEqual(2)
-        expect(stack.at(-1)).toBe(nextContext)
-      })
-
-      it('runs tests with the returned context', (context) => {
-        expect(context).toBe(nextContext)
-      })
+    it('runs the hook with the current context', () => {
+      expect(received).toBe(rootContext)
     })
 
-    describe('given an afterEach hook', () => {
+    it('pushes the returned context onto the stack', (context) => {
+      expect(stack).toHaveLength(2)
+      expect(stack[0]).toBe(rootContext)
+      expect(stack[1]).toBe(accumulated)
+      expect(context).toBe(accumulated)
+    })
+  })
 
-      afterEach((context) => {
-        expect(stack.length).toEqual(1)
-        expect(stack.at(-1)).toEqual({})
-        expect(context).toBe(stack.at(-1))
-      })
+  describe('given an afterEach hook', () => {
 
-      // ☝️ assertions in afterAll hook
-      it('does not mutate the stack', () => true)
-      it('runs the hook with the current context', () => true)
+    afterEach((context) => {
+      expect(context).toBe(rootContext)
+      expect(stack).toHaveLength(1)
+      expect(stack[0]).toBe(rootContext)
     })
 
-    describe('given an afterAll hook', () => {
+    // ☝️ assertions in afterAll hook
+    it('runs the hook with the current context', () => true)
+    it('does not mutate the stack', () => true)
+  })
 
-      afterAll((context) => {
-        expect(stack.length).toEqual(1)
-        expect(stack.at(-1)).toEqual({})
-        expect(context).toBe(stack.at(-1))
-      })
+  describe('given an afterAll hook', () => {
 
-      // ☝️ assertions in afterAll hook
-      it('does not mutate the stack', () => true)
-      it('runs the hook with the current context', () => true)
+    afterAll((context) => {
+      expect(context).toBe(rootContext)
+      expect(stack).toHaveLength(1)
+      expect(stack[0]).toBe(rootContext)
     })
+
+    // ☝️ assertions in afterAll hook
+    it('runs the hook with the current context', () => true)
+    it('does not mutate the stack', () => true)
   })
 })
