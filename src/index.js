@@ -1,6 +1,10 @@
 import * as _jest from '@jest/globals'
 
-export const stack = new Array()
+export const stack = [{}]
+
+function getContext() {
+  return stack.at(-1)
+}
 
 function popContext(expected) {
   if (stack.pop() != expected) {
@@ -8,28 +12,28 @@ function popContext(expected) {
   }
 }
 
+function pushContext(context) {
+  stack.push(context)
+}
+
 export function afterAll(block) {
-  let prev
   _jest.afterAll(async () => {
-    prev = stack.at(-1)
-    await block(prev)
+    await block(getContext())
   })
 }
 
 export function afterEach(block) {
-  let prev
   _jest.afterEach(async () => {
-    prev = stack.at(-1)
-    await block(prev)
+    await block(getContext())
   })
 }
 
 export function beforeAll(block) {
   let prev, next
   _jest.beforeAll(async () => {
-    prev = stack.at(-1)
+    prev = getContext()
     next = await block(prev) || prev
-    stack.push(next)
+    pushContext(next)
   })
   _jest.afterAll(() => popContext(next))
 }
@@ -37,31 +41,15 @@ export function beforeAll(block) {
 export function beforeEach(block) {
   let prev, next
   _jest.beforeEach(async () => {
-    prev = stack.at(-1)
+    prev = getContext()
     next = await block(prev) || prev
-    stack.push(next)
+    pushContext(next)
   })
   _jest.afterEach(() => popContext(next))
 }
 
-export function describe(title, block) {
-  let prev, next
-  _jest.describe(title, () => {
-    _jest.beforeAll(() => {
-      prev = stack.at(-1)
-      next = prev || {}
-      stack.push(next)
-    })
-    block()
-    _jest.afterAll(() => popContext(next))
-  })
-}
-
 export function it(title, block) {
-  let prev, next
   _jest.it(title, async () => {
-    prev = stack.at(-1) || {}
-    next = { ...prev }
-    await block(next)
+    await block(getContext())
   })
 }

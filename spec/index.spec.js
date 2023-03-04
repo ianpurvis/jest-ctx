@@ -1,68 +1,94 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from '../src/index.js'
+import { afterAll, afterEach, beforeAll, beforeEach, it, stack } from '../src/index.js'
 import { generate } from 'randomstring'
 
 const fakeContext = () => ({ key: generate() })
 
-describe('describe', () => {
-  const identityContext = {}
+describe('import scope', () => {
 
-  it('provides the identity context to tests', (context) => {
-    expect(context).toEqual(identityContext)
+  it('initializes stack with an empty context', () => {
+    expect(stack.length).toEqual(1)
+    expect(stack.at(-1)).toEqual({})
   })
 
-  describe('given a beforeAll hook', () => {
-    let prevContext, nextContext = fakeContext()
+  describe('describe', () => {
 
-    beforeAll((context) => {
-      prevContext = context
-      return nextContext
+    it('does not mutate the stack', () => {
+      expect(stack.length).toEqual(1)
+      expect(stack.at(-1)).toEqual({})
     })
 
-    it('passes the current context to the hook', () => {
-      expect(prevContext).toEqual(identityContext)
+    it('runs tests with the current context', (context) => {
+      expect(context).toBe(stack.at(-1))
     })
 
-    it('provides the returned context to tests', (context) => {
-      expect(context).toEqual(nextContext)
-    })
-  })
+    describe('given a beforeAll hook', () => {
+      let prevContext, nextContext = fakeContext()
 
-  describe('given a beforeEach hook', () => {
-    let prevContext, nextContext = fakeContext()
+      beforeAll((context) => {
+        prevContext = context
+        return nextContext
+      })
 
-    beforeEach((context) => {
-      prevContext = context
-      return nextContext
-    })
+      it('runs the hook with the current context', () => {
+        expect(prevContext).toBe(stack.at(0))
+      })
 
-    it('passes the current context to the hook', () => {
-      expect(prevContext).toEqual(identityContext)
-    })
+      it('pushes the returned context onto the stack', () => {
+        expect(stack.length).toEqual(2)
+        expect(stack.at(-1)).toBe(nextContext)
+      })
 
-    it('provides the returned context to tests', (context) => {
-      expect(context).toEqual(nextContext)
-    })
-  })
-
-  describe('given an afterEach hook', () => {
-
-    afterEach((context) => {
-      expect(context).toEqual(identityContext)
+      it('runs tests with the returned context', (context) => {
+        expect(context).toBe(nextContext)
+      })
     })
 
-    it('passes the current context to the hook', () => {
-      // ☝️ assertion in afterAll hook
+    describe('given a beforeEach hook', () => {
+      let prevContext, nextContext = fakeContext()
+
+      beforeEach((context) => {
+        prevContext = context
+        return nextContext
+      })
+
+      it('runs the hook with the current context', () => {
+        expect(prevContext).toBe(stack.at(0))
+      })
+
+      it('pushes the returned context onto the stack', () => {
+        expect(stack.length).toEqual(2)
+        expect(stack.at(-1)).toBe(nextContext)
+      })
+
+      it('runs tests with the returned context', (context) => {
+        expect(context).toBe(nextContext)
+      })
     })
-  })
 
-  describe('given an afterAll hook', () => {
+    describe('given an afterEach hook', () => {
 
-    afterAll((context) => {
-      expect(context).toEqual(identityContext)
+      afterEach((context) => {
+        expect(stack.length).toEqual(1)
+        expect(stack.at(-1)).toEqual({})
+        expect(context).toBe(stack.at(-1))
+      })
+
+      // ☝️ assertions in afterAll hook
+      it('does not mutate the stack', () => true)
+      it('runs the hook with the current context', () => true)
     })
 
-    it('passes the current context to the hook', () => {
-      // ☝️ assertion in afterAll hook
+    describe('given an afterAll hook', () => {
+
+      afterAll((context) => {
+        expect(stack.length).toEqual(1)
+        expect(stack.at(-1)).toEqual({})
+        expect(context).toBe(stack.at(-1))
+      })
+
+      // ☝️ assertions in afterAll hook
+      it('does not mutate the stack', () => true)
+      it('runs the hook with the current context', () => true)
     })
   })
 })
