@@ -1,7 +1,6 @@
 import * as _jest from '@jest/globals'
 
-export const rootContext = {}
-export const stack = [rootContext]
+export const stack = [{}]
 
 function getContext() {
   return stack.at(-1)
@@ -49,8 +48,10 @@ export function beforeEach(block) {
   _jest.afterEach(() => popContext(next))
 }
 
-export function it(title, block) {
+export function test(title, block) {
   _jest.it(title, async () => {
     await block(getContext())
   })
 }
+
+export const it = test
