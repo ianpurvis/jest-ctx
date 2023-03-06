@@ -8,97 +8,68 @@ import {
   scopes,
   test
 } from '../src/index.js'
-import { fakeContext } from './helpers.js'
 
-let depth = 0
+function itWorksAtDepth(depth) {
 
-beforeAll((context) => {
-  expect(scopes).toHaveLength(depth+1)
-  const scope = scopes[depth]
-  expect(context).toBe(scope.groupContext)
-  expect(context).toEqual({})
-})
-
-beforeEach((context) => {
-  expect(scopes).toHaveLength(depth+1)
-  const scope = scopes[depth]
-  expect(context).toBe(scope.testContext)
-  expect(context).toEqual({})
-})
-
-test('scope 0 - test 0', (context) => {
-  expect(scopes).toHaveLength(depth+1)
-  const scope = scopes[depth]
-  expect(context).toBe(scope.testContext)
-  expect(context).toEqual({})
-})
-
-test('scope 0 - test 1', (context) => {
-  expect(scopes).toHaveLength(depth+1)
-  const scope = scopes[depth]
-  expect(context).toBe(scope.testContext)
-  expect(context).toEqual({})
-})
-
-afterAll((context) => {
-  expect(scopes).toHaveLength(depth+1)
-  const scope = scopes[depth]
-  expect(context).toBe(scope.groupContext)
-  expect(context).toEqual({})
-})
-
-afterEach((context) => {
-  expect(scopes).toHaveLength(depth+1)
-  const scope = scopes[depth]
-  expect(context).toBe(scope.testContext)
-  expect(context).toEqual({})
-})
-
-describe('scope 1', () => {
-
-  beforeAll(() => { depth++ })
+  beforeAll((context) => ({ ...context, depth }))
 
   beforeAll((context) => {
+    const { depth } = context
     expect(scopes).toHaveLength(depth+1)
     const scope = scopes[depth]
     expect(context).toBe(scope.groupContext)
-    expect(context).toEqual({})
   })
 
   beforeEach((context) => {
+    const { depth } = context
     expect(scopes).toHaveLength(depth+1)
     const scope = scopes[depth]
     expect(context).toBe(scope.testContext)
-    expect(context).toEqual({})
   })
 
-  test('scope 1 - test 0', (context) => {
+  test(`scope ${depth} - test 0`, (context) => {
+    const { depth } = context
     expect(scopes).toHaveLength(depth+1)
     const scope = scopes[depth]
     expect(context).toBe(scope.testContext)
-    expect(context).toEqual({})
   })
 
-  test('scope 1 - test 1', (context) => {
+  test(`scope ${depth} - test 1`, (context) => {
+    const { depth } = context
     expect(scopes).toHaveLength(depth+1)
     const scope = scopes[depth]
     expect(context).toBe(scope.testContext)
-    expect(context).toEqual({})
-  })
-
-  afterEach((context) => {
-    expect(scopes).toHaveLength(depth+1)
-    const scope = scopes[depth]
-    expect(context).toBe(scope.testContext)
-    expect(context).toEqual({})
   })
 
   afterAll((context) => {
+    const { depth } = context
     expect(scopes).toHaveLength(depth+1)
     const scope = scopes[depth]
     expect(context).toBe(scope.groupContext)
-    expect(context).toEqual({})
   })
 
-  afterAll(() => { depth-- })
+  afterEach((context) => {
+    const { depth } = context
+    expect(scopes).toHaveLength(depth+1)
+    const scope = scopes[depth]
+    expect(context).toBe(scope.testContext)
+  })
+}
+
+itWorksAtDepth(0)
+describe('depth 1', () => {
+  itWorksAtDepth(1)
+  describe('depth 2', () => {
+    itWorksAtDepth(2)
+    describe('depth 3', () => {
+      itWorksAtDepth(3)
+      describe('depth 4', () => {
+        itWorksAtDepth(4)
+      })
+      itWorksAtDepth(3)
+    })
+    itWorksAtDepth(2)
+  })
+  itWorksAtDepth(1)
 })
+itWorksAtDepth(0)
