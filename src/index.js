@@ -1,56 +1,73 @@
-import * as _jest from '@jest/globals'
+import * as native from '@jest/globals'
 
-export const stack = [{}]
+export const scopes = new Array()
 
-function getContext() {
-  return stack.at(-1)
-}
+native.beforeAll(() => {
+  const groupContext = {}
+  const testContext = {}
+  const scope = { groupContext, testContext }
+  scopes.push(scope)
+})
 
-function popContext(expected) {
-  if (stack.pop() != expected) {
-    throw new Error('Context stack corrupted')
-  }
-}
-
-function pushContext(context) {
-  stack.push(context)
-}
+native.beforeEach(() => {
+  const scope = scopes.at(-1)
+  scope.testContext = scope.groupContext
+})
 
 export function afterAll(block) {
-  _jest.afterAll(async () => {
-    await block(getContext())
+  native.afterAll(async () => {
+    const scope = scopes.at(-1)
+    await block(scope.groupContext)
   })
 }
 
 export function afterEach(block) {
-  _jest.afterEach(async () => {
-    await block(getContext())
+  native.afterEach(async () => {
+    const scope = scopes.at(-1)
+    await block(scope.testContext)
   })
 }
 
 export function beforeAll(block) {
-  let prev, next
-  _jest.beforeAll(async () => {
-    prev = getContext()
-    next = await block(prev) || prev
-    pushContext(next)
+  native.beforeAll(async () => {
+    const scope = scopes.at(-1)
+    const prev = scope.groupContext
+    const next = await block(prev) || prev
+    scope.groupContext = next
   })
-  _jest.afterAll(() => popContext(next))
 }
 
 export function beforeEach(block) {
-  let prev, next
-  _jest.beforeEach(async () => {
-    prev = getContext()
-    next = await block(prev) || prev
-    pushContext(next)
+  native.beforeEach(async () => {
+    const scope = scopes.at(-1)
+    const prev = scope.testContext
+    const next = await block(prev) || prev
+    scope.testContext = next
   })
-  _jest.afterEach(() => popContext(next))
+}
+
+export function describe(title, block) {
+  native.describe(title, () => {
+    native.beforeAll(() => {
+      const scope = scopes.at(-1)
+      const next = { ...scope }
+      scopes.push(next)
+    })
+    native.beforeEach(() => {
+      const scope = scopes.at(-1)
+      scope.testContext = scope.groupContext
+    })
+    block()
+    native.afterAll(() => {
+      scopes.pop()
+    })
+  })
 }
 
 export function test(title, block) {
-  _jest.it(title, async () => {
-    await block(getContext())
+  native.test(title, async () => {
+    const scope = scopes.at(-1)
+    await block(scope.testContext)
   })
 }
 

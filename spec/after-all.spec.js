@@ -1,22 +1,11 @@
-import { afterAll as _afterAll, expect, test } from '@jest/globals'
-import { afterAll, stack } from '../src/index.js'
-import { fakeContext, noop } from './helpers.js'
+import { expect } from '@jest/globals'
+import { afterAll, scopes, test } from '../src/index.js'
+import { noop } from './helpers.js'
 
-const initialStack = [...stack]
-const currentContext = stack.at(-1)
-
-let received, returned = fakeContext()
+// See hook below for assertions.
+test('calls the hook with the current group context', noop)
 
 afterAll((context) => {
-  received = context
-  return returned
-})
-
-// See _afterAll for assertions:
-test('calls the hook with the current context', noop)
-test('does not mutate the stack', noop)
-
-_afterAll(() => {
-  expect(received).toBe(currentContext)
-  expect(stack).toEqual(initialStack)
+  const { groupContext } = scopes.at(-1)
+  expect(context).toBe(groupContext)
 })

@@ -1,22 +1,21 @@
 import { expect } from '@jest/globals'
-import { beforeAll, stack, test } from '../src/index.js'
+import { beforeAll, scopes, test } from '../src/index.js'
 import { fakeContext } from './helpers.js'
 
-const initialStack = [...stack]
-const currentContext = stack.at(-1)
-
-let received, accumulated = fakeContext()
+let original, received, returned = fakeContext()
 
 beforeAll((context) => {
+  original = scopes.at(-1).groupContext
   received = context
-  return accumulated
+  return returned
 })
 
-test('calls the hook with the current context', () => {
-  expect(received).toBe(currentContext)
+test('calls the hook with the group context', () => {
+  expect(received).toBe(original)
 })
 
-test('pushes the return value onto the context stack', (context) => {
-  expect(context).toBe(accumulated)
-  expect(stack).toEqual([...initialStack, accumulated])
+test('replaces the group context with the return value', (context) => {
+  const final = scopes.at(-1).groupContext
+  expect(final).toBe(returned)
+  expect(context).toBe(returned)
 })

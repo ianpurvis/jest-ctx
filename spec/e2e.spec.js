@@ -1,67 +1,104 @@
-import { afterAll as _afterAll, beforeAll as _beforeAll, describe, expect } from '@jest/globals'
-import { afterAll, afterEach, beforeAll, beforeEach, stack, test } from '../src/index.js'
+import { expect } from '@jest/globals'
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  scopes,
+  test
+} from '../src/index.js'
 import { fakeContext } from './helpers.js'
 
-const initialStack = [...stack]
+let depth = 0
 
-_beforeAll(() => {
-  expect(stack).toEqual(initialStack)
+beforeAll((context) => {
+  expect(scopes).toHaveLength(depth+1)
+  const scope = scopes[depth]
+  expect(context).toBe(scope.groupContext)
+  expect(context).toEqual({})
 })
 
-test('top level ok', (context) => {
-  expect(stack).toEqual(initialStack)
-  expect(context).toBe(stack.at(-1))
+beforeEach((context) => {
+  expect(scopes).toHaveLength(depth+1)
+  const scope = scopes[depth]
+  expect(context).toBe(scope.testContext)
+  expect(context).toEqual({})
 })
 
-_afterAll(() => {
-  expect(stack).toEqual(initialStack)
+test('scope 0 - test 0', (context) => {
+  expect(scopes).toHaveLength(depth+1)
+  const scope = scopes[depth]
+  expect(context).toBe(scope.testContext)
+  expect(context).toEqual({})
 })
 
-describe('nested', () => {
-  const nestedContext = {}
+test('scope 0 - test 1', (context) => {
+  expect(scopes).toHaveLength(depth+1)
+  const scope = scopes[depth]
+  expect(context).toBe(scope.testContext)
+  expect(context).toEqual({})
+})
 
-  _beforeAll(() => {
-    expect(stack).toEqual(initialStack)
-    nestedContext.initialStack = [...stack]
-    nestedContext.accumulated = []
-  })
+afterAll((context) => {
+  expect(scopes).toHaveLength(depth+1)
+  const scope = scopes[depth]
+  expect(context).toBe(scope.groupContext)
+  expect(context).toEqual({})
+})
+
+afterEach((context) => {
+  expect(scopes).toHaveLength(depth+1)
+  const scope = scopes[depth]
+  expect(context).toBe(scope.testContext)
+  expect(context).toEqual({})
+})
+
+describe('scope 1', () => {
+
+  beforeAll(() => { depth++ })
 
   beforeAll((context) => {
-    const { initialStack, accumulated } = nestedContext
-    expect(stack).toEqual([...initialStack, ...accumulated])
-    expect(context).toBe(stack.at(-1))
-    accumulated.push(fakeContext())
-    return accumulated.at(-1)
+    expect(scopes).toHaveLength(depth+1)
+    const scope = scopes[depth]
+    expect(context).toBe(scope.groupContext)
+    expect(context).toEqual({})
   })
 
   beforeEach((context) => {
-    const { initialStack, accumulated } = nestedContext
-    expect(stack).toEqual([...initialStack, ...accumulated])
-    expect(context).toBe(stack.at(-1))
-    accumulated.push(fakeContext())
-    return accumulated.at(-1)
+    expect(scopes).toHaveLength(depth+1)
+    const scope = scopes[depth]
+    expect(context).toBe(scope.testContext)
+    expect(context).toEqual({})
   })
 
-  test('nested ok', (context) => {
-    const { initialStack, accumulated } = nestedContext
-    expect(stack).toEqual([...initialStack, ...accumulated])
-    expect(context).toBe(stack.at(-1))
+  test('scope 1 - test 0', (context) => {
+    expect(scopes).toHaveLength(depth+1)
+    const scope = scopes[depth]
+    expect(context).toBe(scope.testContext)
+    expect(context).toEqual({})
+  })
+
+  test('scope 1 - test 1', (context) => {
+    expect(scopes).toHaveLength(depth+1)
+    const scope = scopes[depth]
+    expect(context).toBe(scope.testContext)
+    expect(context).toEqual({})
   })
 
   afterEach((context) => {
-    const { initialStack, accumulated } = nestedContext
-    expect(stack).toEqual([...initialStack, ...accumulated])
-    expect(context).toBe(stack.at(-1))
+    expect(scopes).toHaveLength(depth+1)
+    const scope = scopes[depth]
+    expect(context).toBe(scope.testContext)
+    expect(context).toEqual({})
   })
 
   afterAll((context) => {
-    const { initialStack, accumulated } = nestedContext
-    expect(stack).toEqual([...initialStack, ...accumulated])
-    expect(context).toBe(stack.at(-1))
+    expect(scopes).toHaveLength(depth+1)
+    const scope = scopes[depth]
+    expect(context).toBe(scope.groupContext)
+    expect(context).toEqual({})
   })
 
-  _afterAll(() => {
-    const { initialStack, accumulated } = nestedContext
-    expect(stack).toEqual([...initialStack, ...accumulated])
-  })
+  afterAll(() => { depth-- })
 })
