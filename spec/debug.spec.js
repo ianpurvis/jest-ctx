@@ -10,6 +10,12 @@ function dump(value, withStack = false) {
   return value
 }
 
+const output = []
+function log(...values) {
+  output.push(values.join())
+}
+
+_beforeAll(() => { global.console.log = log })
 _beforeAll(() => dump('first _beforeAll', true))
 
 beforeAll(() => dump('outer beforeAll 1'))
@@ -45,3 +51,4 @@ afterEach(() => dump('outer afterEach 1', true))
 afterEach(() => dump('outer afterEach 2', true))
 
 _afterAll(() => dump('last _afterAll', true))
+_afterAll(() => console.debug(output.join('\n')))
