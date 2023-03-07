@@ -64,6 +64,27 @@ export function describe(title, block) {
   })
 }
 
+describe.each = function(table) {
+  const nativeBoundHook = native.describe.each(table)
+  return (title, block) => {
+    nativeBoundHook(title, (...params) => {
+      native.beforeAll(() => {
+        const scope = scopes.at(-1)
+        const next = { ...scope }
+        scopes.push(next)
+      })
+      native.beforeEach(() => {
+        const scope = scopes.at(-1)
+        scope.testContext = scope.groupContext
+      })
+      block(...params)
+      native.afterAll(() => {
+        scopes.pop()
+      })
+    })
+  }
+}
+
 export function test(title, block) {
   native.test(title, async () => {
     const scope = scopes.at(-1)
