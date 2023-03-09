@@ -1,4 +1,5 @@
 import * as native from '@jest/globals'
+import { contextFromLoopArgs } from './util.js'
 
 export const scopes = new Array()
 
@@ -64,21 +65,11 @@ export function describe(title, block) {
   })
 }
 
-function coerceLoopContext(...args) {
-  let context
-  if (args.length === 1 && args[0] === Object(args[0])) {
-    context = args[0]
-  } else {
-    context = args.reduce((prev, next, i) => ({ ...prev, [i]: next }), {})
-  }
-  return context
-}
-
 describe.each = function(table) {
   const nativeBoundHook = native.describe.each(table)
   return (title, block) => {
     nativeBoundHook(title, (...args) => {
-      const loopContext = coerceLoopContext(...args)
+      const loopContext = contextFromLoopArgs(...args)
       native.beforeAll(() => {
         const scope = scopes.at(-1)
         const next = { ...scope }
