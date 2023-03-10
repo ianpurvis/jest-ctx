@@ -1,18 +1,20 @@
 import * as native from '@jest/globals'
 import { contextFromLoopArgs } from './util.js'
 
-export const scopes = new Array()
+const scopes = new Array()
 
 native.beforeAll(() => {
-  const groupContext = {}
-  const testContext = {}
-  const scope = { groupContext, testContext }
-  scopes.push(scope)
+  scopes.push({ groupContext: {}, testContext: undefined })
 })
 
 native.beforeEach(() => {
   const scope = scopes.at(-1)
-  scope.testContext = scope.groupContext
+  scope.testContext = { ...scope.groupContext }
+})
+
+native.afterAll(() => {
+  const scope = scopes.at(-1)
+  scope.textContext = undefined
 })
 
 export function afterAll(block) {
@@ -51,12 +53,13 @@ export function describe(title, block) {
   native.describe(title, () => {
     native.beforeAll(() => {
       const scope = scopes.at(-1)
-      const next = { ...scope }
-      scopes.push(next)
+      const groupContext = { ...scope.groupContext }
+      const testContext = undefined
+      scopes.push({ groupContext, testContext })
     })
-    native.beforeEach(() => {
+    native.afterAll(() => {
       const scope = scopes.at(-1)
-      scope.testContext = scope.groupContext
+      scope.testContext = undefined
     })
     block()
     native.afterAll(() => {
@@ -76,9 +79,9 @@ describe.each = function(table) {
         next.groupContext = { ...next.groupContext, ...loopContext }
         scopes.push(next)
       })
-      native.beforeEach(() => {
+      native.afterAll(() => {
         const scope = scopes.at(-1)
-        scope.testContext = scope.groupContext
+        scope.testContext = undefined
       })
       block(...args)
       native.afterAll(() => {

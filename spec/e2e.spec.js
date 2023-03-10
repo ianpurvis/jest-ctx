@@ -5,54 +5,41 @@ import {
   beforeAll,
   beforeEach,
   describe,
-  scopes,
   test
 } from '../src/index.js'
+import { fakeContext } from './helpers.js'
 
 function itWorksAtDepth(depth) {
 
-  beforeAll((context) => ({ ...context, depth }))
+  const a = fakeContext(), b = fakeContext()
 
   beforeAll((context) => {
-    const { depth } = context
-    expect(scopes).toHaveLength(depth+1)
-    const scope = scopes[depth]
-    expect(context).toBe(scope.groupContext)
+    expect(context).toBeInstanceOf(Object)
+    return { ...context, ...a }
   })
 
   beforeEach((context) => {
-    const { depth } = context
-    expect(scopes).toHaveLength(depth+1)
-    const scope = scopes[depth]
-    expect(context).toBe(scope.testContext)
+    expect(context).toMatchObject(a)
+    return { ...context, ...b }
   })
 
   test(`scope ${depth} - test 0`, (context) => {
-    const { depth } = context
-    expect(scopes).toHaveLength(depth+1)
-    const scope = scopes[depth]
-    expect(context).toBe(scope.testContext)
+    expect(context).toMatchObject(a)
+    expect(context).toMatchObject(b)
   })
 
   test(`scope ${depth} - test 1`, (context) => {
-    const { depth } = context
-    expect(scopes).toHaveLength(depth+1)
-    const scope = scopes[depth]
-    expect(context).toBe(scope.testContext)
-  })
-
-  afterAll((context) => {
-    const { depth } = context
-    expect(scopes).toHaveLength(depth+1)
-    const scope = scopes[depth]
-    expect(context).toBe(scope.groupContext)
+    expect(context).toMatchObject(a)
+    expect(context).toMatchObject(b)
   })
 
   afterEach((context) => {
-    const { depth } = context
-    expect(scopes).toHaveLength(depth+1)
-    const scope = scopes[depth]
-    expect(context).toBe(scope.testContext)
+    expect(context).toMatchObject(a)
+    expect(context).toMatchObject(b)
+  })
+
+  afterAll((context) => {
+    expect(context).toMatchObject(a)
   })
 }
 

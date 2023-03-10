@@ -1,54 +1,47 @@
-// import { afterAll, afterEach, beforeAll, beforeEach, describe, test } from '@jest/globals'
-import { afterAll as _afterAll, beforeAll as _beforeAll } from '@jest/globals'
-import { afterAll, afterEach, beforeAll, beforeEach, describe, test, scopes } from '../src/index.js'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, test } from '../src/index.js'
+import { generate } from 'randomstring'
 
-function dump(value, withStack = false) {
-  console.log(value)
-  if (withStack) {
-    console.log(JSON.stringify(scopes, null, 2))
+function fakeContext() {
+  return { key: generate() }
+}
+
+function dump(event, length = 120) {
+  return (prev) => {
+    const description = prev.key
+    const spacer = ' '.repeat(length - event.length - description.length)
+    console.log(`${event}${spacer}${description}`)
   }
-  return value
+}
+
+function mutate(event, length = 120) {
+  return (prev) => {
+    const next = fakeContext()
+    const description = `${prev.key} -> ${next.key}`
+    const spacer = '\u0020'.repeat(length - event.length - description.length)
+    console.log(`${event}${spacer}${description}`)
+    return next
+  }
 }
 
 const output = []
-function log(...values) {
-  output.push(values.join())
-}
+global.console.log = (...values) => output.push(values.join())
 
-_beforeAll(() => { global.console.log = log })
-_beforeAll(() => dump('first _beforeAll', true))
+let testCount = 1
 
-beforeAll(() => dump('outer beforeAll 1'))
-beforeAll(() => dump('outer beforeAll 2'))
-
-let a = 0, b = 0
-beforeEach(() => dump(`outer beforeEach 1 (test ${++a})`))
-beforeEach(() => dump(`outer beforeEach 2 (test ${++b})`))
-
-test('test 1', () => dump('outer test 1', true))
-test('test 2', () => dump('outer test 2', true))
+beforeAll(mutate('outer beforeAll'))
+beforeEach(mutate('outer beforeEach'))
+test('test 1', dump('test 1'))
+afterAll(dump('outer afterAll'))
+afterEach(dump('outer afterEach'))
 
 describe('describe', () => {
-  beforeAll(() => dump('inner beforeAll 1'))
-  beforeAll(() => dump('inner beforeAll 2'))
-
-  let c = 2, d = 2
-  beforeEach(() => dump(`inner beforeEach 1 (test ${++c})`))
-  beforeEach(() => dump(`inner beforeEach 2 (test ${++d})`))
-
-  test('test 1', () => dump('inner test 1', true))
-  test('test 2', () => dump('inner test 2', true))
-
-  afterAll(() => dump('inner afterAll 1', true))
-  afterAll(() => dump('inner afterAll 2', true))
-  afterEach(() => dump('inner afterEach 1', true))
-  afterEach(() => dump('inner afterEach 2', true))
+  beforeAll(mutate('inner beforeAll'))
+  beforeEach(mutate('inner beforeEach'))
+  test('test 2', dump('test 2'))
+  afterAll(dump('inner afterAll'))
+  afterEach(dump('inner afterEach'))
 })
 
-afterAll(() => dump('outer afterAll 1', true))
-afterAll(() => dump('outer afterAll 2', true))
-afterEach(() => dump('outer afterEach 1', true))
-afterEach(() => dump('outer afterEach 2', true))
+test('test 3', dump('test 3'))
 
-_afterAll(() => dump('last _afterAll', true))
-_afterAll(() => console.debug(output.join('\n')))
+afterAll(() => console.debug(output.join('\n')))

@@ -1,5 +1,5 @@
 import { expect, jest } from '@jest/globals'
-import { afterAll, beforeAll, beforeEach, describe, scopes, test } from '../src/index.js'
+import { afterAll, beforeAll, beforeEach, describe, test } from '../src/index.js'
 import { noop } from './helpers.js'
 
 describe('given a table of arrays', () => {
@@ -10,22 +10,18 @@ describe('given a table of arrays', () => {
     [ 1, 0, 1 ]
   ]
 
-  let i, groupContextBefore, scopeBefore, scopeDepthBefore
+  let i, groupContextBefore
 
-  beforeAll(() => {
+  beforeAll((context) => {
     i = 0
-    scopeDepthBefore = scopes.length
-    scopeBefore = scopes.at(-1)
-    groupContextBefore = scopeBefore.groupContext
+    groupContextBefore = context
   })
 
   describe.each(table)('iteration %#', (...row) => {
 
-    let groupContext, loopContext, testContext, scope, scopeDepth
+    let groupContext, loopContext, testContext
 
     beforeAll((context) => {
-      scopeDepth = scopes.length
-      scope = scopes.at(-1)
       groupContext = context
       loopContext = {
         '0': row[0],
@@ -43,8 +39,6 @@ describe('given a table of arrays', () => {
     })
 
     test('pushes a copy of the parent scope onto the stack before all', () => {
-      expect(scopeDepth).toEqual(scopeDepthBefore+1)
-      expect(scope).not.toBe(scopeBefore)
       expect(groupContext).toMatchObject(groupContextBefore)
     })
 
@@ -64,8 +58,6 @@ describe('given a table of arrays', () => {
   })
 
   test('pops the scope off the stack after all', (context) => {
-    expect(scopes.length).toEqual(scopeDepthBefore)
-    expect(scopes.at(-1)).toBe(scopeBefore)
     expect(context).toBe(groupContextBefore)
   })
 })
@@ -78,22 +70,18 @@ describe('given a table of objects', () => {
     { a: 0, b: 2, c: 2 }
   ]
 
-  let i, groupContextBefore, scopeBefore, scopeDepthBefore
+  let i, groupContextBefore
 
-  beforeAll(() => {
+  beforeAll((context) => {
     i = 0
-    scopeDepthBefore = scopes.length
-    scopeBefore = scopes.at(-1)
-    groupContextBefore = scopeBefore.groupContext
+    groupContextBefore = context
   })
 
   describe.each(table)('iteration %#', (...row) => {
 
-    let groupContext, loopContext, testContext, scope, scopeDepth
+    let groupContext, loopContext, testContext
 
     beforeAll((context) => {
-      scopeDepth = scopes.length
-      scope = scopes.at(-1)
       groupContext = context
       loopContext = row[0]
     })
@@ -107,8 +95,6 @@ describe('given a table of objects', () => {
     })
 
     test('pushes a copy of the parent scope onto the stack before all', () => {
-      expect(scopeDepth).toEqual(scopeDepthBefore+1)
-      expect(scope).not.toBe(scopeBefore)
       expect(groupContext).toMatchObject(groupContextBefore)
     })
 
@@ -128,8 +114,6 @@ describe('given a table of objects', () => {
   })
 
   test('pops the scope off the stack after all', (context) => {
-    expect(scopes.length).toEqual(scopeDepthBefore)
-    expect(scopes.at(-1)).toBe(scopeBefore)
     expect(context).toBe(groupContextBefore)
   })
 })
@@ -142,22 +126,18 @@ describe('given a table of values', () => {
     "c"
   ]
 
-  let i, groupContextBefore, scopeBefore, scopeDepthBefore
+  let i, groupContextBefore
 
-  beforeAll(() => {
+  beforeAll((context) => {
     i = 0
-    scopeDepthBefore = scopes.length
-    scopeBefore = scopes.at(-1)
-    groupContextBefore = scopeBefore.groupContext
+    groupContextBefore = context
   })
 
   describe.each(table)('iteration %#', (...row) => {
 
-    let groupContext, loopContext, testContext, scope, scopeDepth
+    let groupContext, loopContext, testContext
 
     beforeAll((context) => {
-      scopeDepth = scopes.length
-      scope = scopes.at(-1)
       groupContext = context
       loopContext = {
         '0': row[0]
@@ -173,8 +153,6 @@ describe('given a table of values', () => {
     })
 
     test('pushes a copy of the parent scope onto the stack before all', () => {
-      expect(scopeDepth).toEqual(scopeDepthBefore+1)
-      expect(scope).not.toBe(scopeBefore)
       expect(groupContext).toMatchObject(groupContextBefore)
     })
 
@@ -194,8 +172,6 @@ describe('given a table of values', () => {
   })
 
   test('pops the scope off the stack after all', (context) => {
-    expect(scopes.length).toEqual(scopeDepthBefore)
-    expect(scopes.at(-1)).toBe(scopeBefore)
     expect(context).toBe(groupContextBefore)
   })
 })
