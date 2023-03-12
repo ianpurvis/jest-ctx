@@ -1,7 +1,7 @@
 import { expect, jest } from '@jest/globals'
 import { afterAll, beforeAll, beforeEach, describe, test } from '../src/index.js'
 import { contextFromLoopArgs } from '../src/util.js'
-import { fakeContext, noop } from './helpers.js'
+import { fakeContext } from './helpers.js'
 
 const subjects = [
   {
