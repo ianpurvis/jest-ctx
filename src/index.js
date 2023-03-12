@@ -1,69 +1,57 @@
 import * as native from '@jest/globals'
 import { contextFromLoopArgs } from './util.js'
 
-const scopes = new Array()
+const groupContexts = []
+let testContext
 
 native.beforeAll(() => {
-  scopes.push({ groupContext: {}, testContext: undefined })
+  groupContexts.push({})
 })
 
 native.beforeEach(() => {
-  const scope = scopes.at(-1)
-  scope.testContext = { ...scope.groupContext }
-})
-
-native.afterAll(() => {
-  const scope = scopes.at(-1)
-  scope.textContext = undefined
+  const groupContext = groupContexts.at(-1)
+  testContext = { ...groupContext }
 })
 
 export function afterAll(block) {
   native.afterAll(async () => {
-    const scope = scopes.at(-1)
-    await block(scope.groupContext)
+    const context = groupContexts.at(-1)
+    await block(context)
   })
 }
 
 export function afterEach(block) {
   native.afterEach(async () => {
-    const scope = scopes.at(-1)
-    await block(scope.testContext)
+    await block(testContext)
   })
 }
 
 export function beforeAll(block) {
   native.beforeAll(async () => {
-    const scope = scopes.at(-1)
-    const prev = scope.groupContext
+    const prev = groupContexts.at(-1)
     const next = await block(prev) || prev
-    scope.groupContext = next
+    groupContexts.splice(-1, 1, next)
   })
 }
 
 export function beforeEach(block) {
   native.beforeEach(async () => {
-    const scope = scopes.at(-1)
-    const prev = scope.testContext
+    const prev = testContext
     const next = await block(prev) || prev
-    scope.testContext = next
+    testContext = next
   })
 }
 
 export function describe(title, block) {
   native.describe(title, () => {
     native.beforeAll(() => {
-      const scope = scopes.at(-1)
-      const groupContext = { ...scope.groupContext }
-      const testContext = undefined
-      scopes.push({ groupContext, testContext })
-    })
-    native.afterAll(() => {
-      const scope = scopes.at(-1)
-      scope.testContext = undefined
+      const prev = groupContexts.at(-1)
+      const next = { ...prev }
+      groupContexts.push(next)
     })
     block()
     native.afterAll(() => {
-      scopes.pop()
+      groupContexts.pop()
     })
   })
 }
@@ -74,18 +62,13 @@ describe.each = function(table) {
     nativeBoundHook(title, (...args) => {
       const loopContext = contextFromLoopArgs(...args)
       native.beforeAll(() => {
-        const scope = scopes.at(-1)
-        const next = { ...scope }
-        next.groupContext = { ...next.groupContext, ...loopContext }
-        scopes.push(next)
-      })
-      native.afterAll(() => {
-        const scope = scopes.at(-1)
-        scope.testContext = undefined
+        const prev = groupContexts.at(-1)
+        const next = { ...prev, ...loopContext }
+        groupContexts.push(next)
       })
       block(...args)
       native.afterAll(() => {
-        scopes.pop()
+        groupContexts.pop()
       })
     })
   }
@@ -93,8 +76,7 @@ describe.each = function(table) {
 
 export function test(title, block) {
   native.test(title, async () => {
-    const scope = scopes.at(-1)
-    await block(scope.testContext)
+    await block(testContext)
   })
 }
 
