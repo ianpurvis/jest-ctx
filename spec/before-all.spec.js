@@ -1,19 +1,20 @@
-import { expect } from '@jest/globals'
+import { expect, jest } from '@jest/globals'
 import { beforeAll, test } from '../src/index.js'
 import { fakeContext } from './helpers.js'
 
-let received, returned = fakeContext()
+const beforeAllFn = jest.fn(() => fakeContext())
+const testFn = jest.fn()
 
-beforeAll((context) => {
-  received = context
-  return returned
-})
+beforeAll(beforeAllFn)
+beforeAll(beforeAllFn)
+test('mock test', testFn)
 
 test('calls the hook with the group context', () => {
   const initialGroupContext = {}
-  expect(received).toEqual(initialGroupContext)
+  expect(beforeAllFn).toHaveBeenCalledWith(initialGroupContext)
 })
 
-test('replaces the group context with the return value', (context) => {
-  expect(context).toEqual(returned)
+test('replaces the group context with the result', () => {
+  const returnedContext = beforeAllFn.mock.results[0].value
+  expect(beforeAllFn).toHaveBeenCalledWith(returnedContext)
 })
