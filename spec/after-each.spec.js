@@ -1,15 +1,19 @@
-import { expect } from '@jest/globals'
-import { afterEach, beforeEach, test } from '../src/index.js'
-import { noop } from './helpers.js'
+import { expect, jest } from '@jest/globals'
+import { afterAll, afterEach, beforeEach, test } from '../src/index.js'
+import { fakeContext } from './helpers.js'
 
-let testContext
-beforeEach((context) => {
-  testContext = context
-})
+const beforeEachFn = jest.fn(() => fakeContext())
+const testFn = jest.fn()
+const afterEachFn = jest.fn()
 
-// See hook below for assertions.
-test('calls the hook with the current test context', noop)
+beforeEach(beforeEachFn)
+test('provides fn with the test context', testFn)
+test('mock test', testFn)
+afterEach(afterEachFn)
 
-afterEach((context) => {
-  expect(context).toBe(testContext)
+afterAll(() => {
+  for (let i = 0, testContext; i < testFn.mock.calls.length; i++) {
+    testContext = beforeEachFn.mock.results[i].value
+    expect(afterEachFn).toHaveBeenNthCalledWith(i+1, testContext)
+  }
 })
