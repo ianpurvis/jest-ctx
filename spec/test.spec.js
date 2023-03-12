@@ -1,17 +1,13 @@
-import { expect } from '@jest/globals'
-import { beforeEach, it, test } from '../src/index.js'
+import { expect, jest } from '@jest/globals'
+import { it, test } from '../src/index.js'
 
-let testContext
-beforeEach((context) => {
-  testContext = context
-})
+const testFn = jest.fn()
 
-test('receives the test context', (context) => {
-  expect(context).toBe(testContext)
-})
+test('mock test', testFn)
 
-test('does not mutate the scope stack', (context) => {
-  expect(context).toBe(testContext)
+test('receives the test context', () => {
+  const initialTestContext = {}
+  expect(testFn).toHaveBeenCalledWith(initialTestContext)
 })
 
 test('is aliased as it', () => {
