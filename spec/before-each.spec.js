@@ -11,9 +11,8 @@ beforeEach(secondBeforeEachFn)
 test('mock test', testFn)
 test('mock test', testFn)
 
-test('calls the hook with the test context', () => {
-  const initialTestContext = {}
-  expect(beforeEachFn).toHaveBeenCalledWith(initialTestContext)
+test('calls the hook with any test context', () => {
+  expect(beforeEachFn).toHaveBeenNthCalledWith(1, undefined)
 })
 
 test('replaces the test context with the result', () => {

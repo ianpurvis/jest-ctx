@@ -1,47 +1,38 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, test } from '../src/index.js'
+import { fakeContext } from './helpers.js'
 import { generate } from 'randomstring'
 
-function fakeContext() {
-  return { key: generate() }
-}
+const output = []
 
-function dump(event, length = 120) {
+function dump(event, depth = 0) {
   return (prev) => {
-    const description = prev.key
-    const spacer = ' '.repeat(length - event.length - description.length)
-    console.log(`${event}${spacer}${description}`)
+    output.push({ depth, event, prev })
   }
 }
 
-function mutate(event, length = 120) {
+function mutate(event, depth = 0) {
   return (prev) => {
-    const next = fakeContext()
-    const description = `${prev.key} -> ${next.key}`
-    const spacer = '\u0020'.repeat(length - event.length - description.length)
-    console.log(`${event}${spacer}${description}`)
+    const next = generate(6)
+    output.push({ depth, event, prev, next })
     return next
   }
 }
 
-const output = []
-global.console.log = (...values) => output.push(values.join())
+beforeAll(mutate('beforeAll', 0))
+beforeEach(mutate('beforeEach', 0))
+test('mock test', dump('test 1', 0))
+afterAll(dump('afterAll', 0))
+afterEach(dump('afterEach', 0))
 
-let testCount = 1
-
-beforeAll(mutate('outer beforeAll'))
-beforeEach(mutate('outer beforeEach'))
-test('test 1', dump('test 1'))
-afterAll(dump('outer afterAll'))
-afterEach(dump('outer afterEach'))
-
-describe('describe', () => {
-  beforeAll(mutate('inner beforeAll'))
-  beforeEach(mutate('inner beforeEach'))
-  test('test 2', dump('test 2'))
-  afterAll(dump('inner afterAll'))
-  afterEach(dump('inner afterEach'))
+describe('mock describe', () => {
+  beforeAll(mutate('beforeAll', 1))
+  beforeEach(mutate('beforeEach', 1))
+  test('mock test', dump('test 2', 1))
+  test('mock test', dump('test 3', 1))
+  afterAll(dump('afterAll', 1))
+  afterEach(dump('afterEach', 1))
 })
 
-test('test 3', dump('test 3'))
+test('mock test', dump('test 4', 0))
 
-afterAll(() => console.debug(output.join('\n')))
+afterAll(() => console.table(output))

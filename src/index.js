@@ -4,13 +4,8 @@ import { contextFromLoopArgs } from './util.js'
 const groupContexts = []
 let testContext
 
-native.beforeAll(() => {
-  groupContexts.push({})
-})
-
 native.beforeEach(() => {
-  const groupContext = groupContexts.at(-1)
-  testContext = { ...groupContext }
+  testContext = groupContexts.at(-1)
 })
 
 export function afterAll(block) {
@@ -29,25 +24,28 @@ export function afterEach(block) {
 export function beforeAll(block) {
   native.beforeAll(async () => {
     const prev = groupContexts.at(-1)
-    const next = await block(prev) || prev
-    groupContexts.splice(-1, 1, next)
+    const next = await block(prev)
+    if (next !== undefined) {
+      groupContexts.splice(-1, 1, next)
+    }
   })
 }
 
 export function beforeEach(block) {
   native.beforeEach(async () => {
     const prev = testContext
-    const next = await block(prev) || prev
-    testContext = next
+    const next = await block(prev)
+    if (next !== undefined) {
+      testContext = next
+    }
   })
 }
 
 export function describe(title, block) {
   native.describe(title, () => {
     native.beforeAll(() => {
-      const prev = groupContexts.at(-1)
-      const next = { ...prev }
-      groupContexts.push(next)
+      const context = groupContexts.at(-1)
+      groupContexts.push(context)
     })
     block()
     native.afterAll(() => {

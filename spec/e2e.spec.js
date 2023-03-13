@@ -20,7 +20,7 @@ function itWorksAtDepth() {
     if (groupContext) {
       expect(context).toMatchObject(groupContext)
     } else {
-      expect(context).toEqual({})
+      expect(context).toBeUndefined()
     }
     groupContext = { ...context, ...fakeContext() }
     groupContexts.push(groupContext)

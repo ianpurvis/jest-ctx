@@ -5,9 +5,8 @@ const testFn = jest.fn()
 
 test('mock test', testFn)
 
-test('receives the test context', () => {
-  const initialTestContext = {}
-  expect(testFn).toHaveBeenCalledWith(initialTestContext)
+test('receives any test context', () => {
+  expect(testFn).toHaveBeenCalledWith(undefined)
 })
 
 test('is aliased as it', () => {
