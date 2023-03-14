@@ -68,6 +68,8 @@ describe.each = function(table) {
   }
 }
 
+describe.skip = native.describe.skip
+
 export function test(title, block) {
   native.test(title, async () => {
     await block(testContext)
@@ -81,5 +83,7 @@ test.each = function(table) {
     })
   }
 }
+
+test.skip = native.test.skip
 
 export const it = test
