@@ -1,5 +1,4 @@
-import { expect, jest } from '@jest/globals'
-import { it, test } from '../src/index.js'
+import { expect, it, jest, test } from '../src/index.js'
 
 const testFn = jest.fn()
 

@@ -1,6 +1,6 @@
-import { expect, test } from '@jest/globals'
 import * as native from '@jest/globals'
 import * as module from '../src/index.js'
+import { expect, test } from '../src/index.js'
 
 const keys = (o) => Object.keys(o).sort()
 

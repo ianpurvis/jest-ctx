@@ -1,5 +1,4 @@
-import { expect, jest } from '@jest/globals'
-import { beforeAll, describe, test } from '../src/index.js'
+import { beforeAll, describe, expect, jest, test } from '../src/index.js'
 import { loopSubjects } from './fixtures.js'
 import { randomString } from './helpers.js'
 

@@ -1,5 +1,4 @@
-import { expect, jest } from '@jest/globals'
-import { beforeEach, test } from '../src/index.js'
+import { beforeEach, expect, jest, test } from '../src/index.js'
 import { randomString } from './helpers.js'
 
 const beforeEachFn = jest.fn(() => randomString())
