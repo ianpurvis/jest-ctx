@@ -68,6 +68,19 @@ describe.each = function(table) {
   }
 }
 
+describe.only = function(name, fn) {
+  native.describe.only(name, () => {
+    native.beforeAll(() => {
+      const context = groupContexts.at(-1)
+      groupContexts.push(context)
+    })
+    block()
+    native.afterAll(() => {
+      groupContexts.pop()
+    })
+  })
+}
+
 describe.skip = native.describe.skip
 
 export function test(title, block) {
@@ -82,6 +95,12 @@ test.each = function(table) {
       await block(testContext, ...args)
     })
   }
+}
+
+test.only = function(name, fn) {
+  native.test.only(name, async () => {
+    await fn(testContext)
+  })
 }
 
 test.skip = native.test.skip
