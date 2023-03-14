@@ -74,4 +74,12 @@ export function test(title, block) {
   })
 }
 
+test.each = function(table) {
+  return (title, block) => {
+    native.test.each(table)(title, async (...args) => {
+      await block(testContext, ...args)
+    })
+  }
+}
+
 export const it = test
