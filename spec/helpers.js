@@ -1,7 +1,5 @@
 import { randomBytes } from 'node:crypto'
 
-export const fakeContext = () => ({ [randomString()]: randomString() })
-
 export function toStartWith(actual, expected) {
   const pass = actual.startsWith(expected)
   const message = () =>
