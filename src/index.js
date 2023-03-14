@@ -97,6 +97,12 @@ test.each = function(table) {
   }
 }
 
+test.failing = function(name, fn) {
+  native.test.failing(name, async () => {
+    await fn(testContext)
+  })
+}
+
 test.only = function(name, fn) {
   native.test.only(name, async () => {
     await fn(testContext)
