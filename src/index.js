@@ -125,3 +125,6 @@ test.todo = native.test.todo
 export const fdescribe = describe.only
 export const fit = test.only
 export const it = test
+export const xdescribe = describe.skip
+export const xit = test.skip
+export const xtest = test.skip
