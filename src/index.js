@@ -85,6 +85,8 @@ describe.skip = native.describe.skip
 
 export const expect = native.expect
 
+export const jest = native.jest
+
 export function test(title, block) {
   native.test(title, async () => {
     await block(testContext)
