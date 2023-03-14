@@ -89,6 +89,12 @@ export function test(title, block) {
   })
 }
 
+test.concurrent = function(name, fn) {
+  native.test.concurrent(name, async () => {
+    await fn(testContext)
+  })
+}
+
 test.each = function(table) {
   return (title, block) => {
     native.test.each(table)(title, async (...args) => {
