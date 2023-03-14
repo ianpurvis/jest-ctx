@@ -1,5 +1,4 @@
 import * as native from '@jest/globals'
-import { contextFromLoopArgs } from './util.js'
 
 const groupContexts = []
 let testContext
@@ -55,14 +54,11 @@ export function describe(title, block) {
 }
 
 describe.each = function(table) {
-  const nativeBoundHook = native.describe.each(table)
   return (title, block) => {
-    nativeBoundHook(title, (...args) => {
-      const loopContext = contextFromLoopArgs(...args)
+    native.describe.each(table)(title, (...args) => {
       native.beforeAll(() => {
-        const prev = groupContexts.at(-1)
-        const next = { ...prev, ...loopContext }
-        groupContexts.push(next)
+        const context = groupContexts.at(-1)
+        groupContexts.push(context)
       })
       block(...args)
       native.afterAll(() => {
