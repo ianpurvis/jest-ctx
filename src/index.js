@@ -122,4 +122,6 @@ test.only = function(name, fn) {
 test.skip = native.test.skip
 test.todo = native.test.todo
 
+export const fdescribe = describe.only
+export const fit = test.only
 export const it = test
