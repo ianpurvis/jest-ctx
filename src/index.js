@@ -83,6 +83,8 @@ describe.only = function(name, fn) {
 
 describe.skip = native.describe.skip
 
+export const expect = native.expect
+
 export function test(title, block) {
   native.test(title, async () => {
     await block(testContext)
