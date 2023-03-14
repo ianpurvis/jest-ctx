@@ -104,5 +104,6 @@ test.only = function(name, fn) {
 }
 
 test.skip = native.test.skip
+test.todo = native.test.todo
 
 export const it = test
