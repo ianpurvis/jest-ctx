@@ -1,6 +1,8 @@
 import { expect } from '@jest/globals'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, test } from '../src/index.js'
-import { fakeContext } from './helpers.js'
+import { toStartWith, randomString } from './helpers.js'
+
+expect.extend({ toStartWith })
 
 const maxDepth = 5
 let depth = 0
@@ -8,7 +10,7 @@ let groupContexts = []
 let testContext
 
 beforeEach(() => {
-  testContext = null
+  testContext = groupContexts.at(-1)
 })
 
 function itWorksAtDepth() {
@@ -17,38 +19,32 @@ function itWorksAtDepth() {
 
   beforeAll((context) => {
     groupContext = groupContexts.at(-1)
-    if (groupContext) {
-      expect(context).toMatchObject(groupContext)
-    } else {
-      expect(context).toBeUndefined()
-    }
-    groupContext = { ...context, ...fakeContext() }
+    expect(context).toEqual(groupContext)
+    groupContext = (context||'') + randomString()
     groupContexts.push(groupContext)
     return groupContext
   })
 
   beforeEach((context) => {
-    expect(context).toMatchObject(groupContext)
-    if (testContext) {
-      expect(context).toMatchObject(testContext)
-    }
-    testContext = { ...context, ...fakeContext() }
+    expect(context).toStartWith(groupContext)
+    expect(context).toEqual(testContext)
+    testContext = context + randomString()
     return testContext
   })
 
   test(`it works at depth ${depth}`, (context) => {
-    expect(context).toMatchObject(groupContext)
-    expect(context).toMatchObject(testContext)
+    expect(context).toStartWith(groupContext)
+    expect(context).toEqual(testContext)
   })
 
   afterEach((context) => {
-    expect(context).toMatchObject(groupContext)
-    expect(context).toMatchObject(testContext)
+    expect(context).toStartWith(groupContext)
+    expect(context).toEqual(testContext)
   })
 
   afterAll((context) => {
-    expect(context).toMatchObject(groupContext)
-    expect(context).not.toMatchObject(testContext)
+    expect(context).toEqual(groupContext)
+    expect(context).not.toEqual(testContext)
     groupContexts.pop()
   })
 

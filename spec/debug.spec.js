@@ -1,6 +1,5 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, test } from '../src/index.js'
-import { fakeContext } from './helpers.js'
-import { generate } from 'randomstring'
+import { randomString } from './helpers.js'
 
 const output = []
 
@@ -12,7 +11,7 @@ function dump(event, depth = 0) {
 
 function mutate(event, depth = 0) {
   return (prev) => {
-    const next = generate(6)
+    const next = randomString()
     output.push({ depth, event, prev, next })
     return next
   }

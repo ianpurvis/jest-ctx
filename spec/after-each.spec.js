@@ -1,8 +1,8 @@
 import { expect, jest } from '@jest/globals'
 import { afterAll, afterEach, beforeEach, test } from '../src/index.js'
-import { fakeContext } from './helpers.js'
+import { randomString } from './helpers.js'
 
-const beforeEachFn = jest.fn(() => fakeContext())
+const beforeEachFn = jest.fn(() => randomString())
 const testFn = jest.fn()
 const afterEachFn = jest.fn()
 
