@@ -9,42 +9,42 @@ native.beforeEach(() => {
   testContext = groupContext
 })
 
-export function afterAll(block) {
+export function afterAll(fn) {
   native.afterAll(async () => {
-    await block(groupContext)
+    await fn(groupContext)
   })
 }
 
-export function afterEach(block) {
+export function afterEach(fn) {
   native.afterEach(async () => {
-    await block(testContext)
+    await fn(testContext)
   })
 }
 
-export function beforeAll(block) {
+export function beforeAll(fn) {
   native.beforeAll(async () => {
-    const next = await block(groupContext)
+    const next = await fn(groupContext)
     if (next !== undefined) {
       groupContext = next
     }
   })
 }
 
-export function beforeEach(block) {
+export function beforeEach(fn) {
   native.beforeEach(async () => {
-    const next = await block(testContext)
+    const next = await fn(testContext)
     if (next !== undefined) {
       testContext = next
     }
   })
 }
 
-export function describe(title, block) {
-  native.describe(title, () => {
+export function describe(name, fn) {
+  native.describe(name, () => {
     native.beforeAll(() => {
       contextStack.push(groupContext)
     })
-    block()
+    fn()
     native.afterAll(() => {
       groupContext = contextStack.pop()
     })
@@ -52,12 +52,12 @@ export function describe(title, block) {
 }
 
 describe.each = function(table) {
-  return (title, block) => {
-    native.describe.each(table)(title, (...args) => {
+  return (name, fn) => {
+    native.describe.each(table)(name, (...args) => {
       native.beforeAll(() => {
         contextStack.push(groupContext)
       })
-      block(...args)
+      fn(...args)
       native.afterAll(() => {
         groupContext = contextStack.pop()
       })
@@ -70,7 +70,7 @@ describe.only = function(name, fn) {
     native.beforeAll(() => {
       contextStack.push(groupContext)
     })
-    block()
+    fn()
     native.afterAll(() => {
       groupContext = contextStack.pop()
     })
@@ -79,9 +79,9 @@ describe.only = function(name, fn) {
 
 describe.skip = native.describe.skip
 
-export function test(title, block) {
-  native.test(title, async () => {
-    await block(testContext)
+export function test(name, fn) {
+  native.test(name, async () => {
+    await fn(testContext)
   })
 }
 
@@ -92,9 +92,9 @@ test.concurrent = function(name, fn) {
 }
 
 test.each = function(table) {
-  return (title, block) => {
-    native.test.each(table)(title, async (...args) => {
-      await block(testContext, ...args)
+  return (name, fn) => {
+    native.test.each(table)(name, async (...args) => {
+      await fn(testContext, ...args)
     })
   }
 }
