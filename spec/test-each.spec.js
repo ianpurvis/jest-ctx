@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from '../src/index.js'
 import { loopSubjects } from './fixtures.js'
-import { randomString } from './helpers.js'
+import { randomString, wait } from './helpers.js'
 
 for (const { description, table } of loopSubjects) {
   describe(`given ${description}`, () => {
@@ -20,3 +20,5 @@ for (const { description, table } of loopSubjects) {
     })
   })
 }
+
+test.failing.each([1])('supports timeout', () => wait(2), 1)
