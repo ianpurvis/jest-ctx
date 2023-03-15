@@ -73,7 +73,7 @@ export const xit = test.skip
 export const xtest = test.skip
 
 function adaptDescribeHook(hook) {
-  return (name, fn) => {
+  return (name, fn, timeout) => {
     hook(name, (...args) => {
       native.beforeAll(() => {
         contextStack.push(groupContext)
@@ -82,7 +82,7 @@ function adaptDescribeHook(hook) {
       native.afterAll(() => {
         groupContext = contextStack.pop()
       })
-    })
+    }, timeout)
   }
 }
 
