@@ -9,34 +9,34 @@ native.beforeEach(() => {
   testContext = groupContext
 })
 
-export function afterAll(fn) {
+export function afterAll(fn, timeout) {
   native.afterAll(async () => {
     await fn(groupContext)
-  })
+  }, timeout)
 }
 
-export function afterEach(fn) {
+export function afterEach(fn, timeout) {
   native.afterEach(async () => {
     await fn(testContext)
-  })
+  }, timeout)
 }
 
-export function beforeAll(fn) {
+export function beforeAll(fn, timeout) {
   native.beforeAll(async () => {
     const next = await fn(groupContext)
     if (next !== undefined) {
       groupContext = next
     }
-  })
+  }, timeout)
 }
 
-export function beforeEach(fn) {
+export function beforeEach(fn, timeout) {
   native.beforeEach(async () => {
     const next = await fn(testContext)
     if (next !== undefined) {
       testContext = next
     }
-  })
+  }, timeout)
 }
 
 export function describe(name, fn) {
@@ -52,7 +52,7 @@ export function describe(name, fn) {
 }
 
 describe.each = function(table) {
-  return (name, fn) => {
+  return (name, fn, timeout) => {
     native.describe.each(table)(name, (...args) => {
       native.beforeAll(() => {
         contextStack.push(groupContext)
@@ -61,7 +61,7 @@ describe.each = function(table) {
       native.afterAll(() => {
         groupContext = contextStack.pop()
       })
-    })
+    }, timeout)
   }
 }
 
@@ -79,36 +79,36 @@ describe.only = function(name, fn) {
 
 describe.skip = native.describe.skip
 
-export function test(name, fn) {
+export function test(name, fn, timeout) {
   native.test(name, async () => {
     await fn(testContext)
-  })
+  }, timeout)
 }
 
-test.concurrent = function(name, fn) {
+test.concurrent = function(name, fn, timeout) {
   native.test.concurrent(name, async () => {
     await fn(testContext)
-  })
+  }, timeout)
 }
 
 test.each = function(table) {
-  return (name, fn) => {
+  return (name, fn, timeout) => {
     native.test.each(table)(name, async (...args) => {
       await fn(testContext, ...args)
-    })
+    }, timeout)
   }
 }
 
-test.failing = function(name, fn) {
+test.failing = function(name, fn, timeout) {
   native.test.failing(name, async () => {
     await fn(testContext)
-  })
+  }, timeout)
 }
 
-test.only = function(name, fn) {
+test.only = function(name, fn, timeout) {
   native.test.only(name, async () => {
     await fn(testContext)
-  })
+  }, timeout)
 }
 
 test.skip = native.test.skip

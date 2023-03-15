@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto'
+export { setTimeout as wait } from 'node:timers/promises'
 
 export function toStartWith(actual, expected) {
   const pass = actual.startsWith(expected)
