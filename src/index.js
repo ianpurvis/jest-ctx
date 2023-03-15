@@ -1,17 +1,17 @@
 import * as native from '@jest/globals'
 export { expect, jest } from '@jest/globals'
 
-const groupContexts = []
+const contextStack = []
+let groupContext
 let testContext
 
 native.beforeEach(() => {
-  testContext = groupContexts.at(-1)
+  testContext = groupContext
 })
 
 export function afterAll(block) {
   native.afterAll(async () => {
-    const context = groupContexts.at(-1)
-    await block(context)
+    await block(groupContext)
   })
 }
 
@@ -23,18 +23,16 @@ export function afterEach(block) {
 
 export function beforeAll(block) {
   native.beforeAll(async () => {
-    const prev = groupContexts.at(-1)
-    const next = await block(prev)
+    const next = await block(groupContext)
     if (next !== undefined) {
-      groupContexts.splice(-1, 1, next)
+      groupContext = next
     }
   })
 }
 
 export function beforeEach(block) {
   native.beforeEach(async () => {
-    const prev = testContext
-    const next = await block(prev)
+    const next = await block(testContext)
     if (next !== undefined) {
       testContext = next
     }
@@ -44,12 +42,11 @@ export function beforeEach(block) {
 export function describe(title, block) {
   native.describe(title, () => {
     native.beforeAll(() => {
-      const context = groupContexts.at(-1)
-      groupContexts.push(context)
+      contextStack.push(groupContext)
     })
     block()
     native.afterAll(() => {
-      groupContexts.pop()
+      groupContext = contextStack.pop()
     })
   })
 }
@@ -58,12 +55,11 @@ describe.each = function(table) {
   return (title, block) => {
     native.describe.each(table)(title, (...args) => {
       native.beforeAll(() => {
-        const context = groupContexts.at(-1)
-        groupContexts.push(context)
+        contextStack.push(groupContext)
       })
       block(...args)
       native.afterAll(() => {
-        groupContexts.pop()
+        groupContext = contextStack.pop()
       })
     })
   }
@@ -72,12 +68,11 @@ describe.each = function(table) {
 describe.only = function(name, fn) {
   native.describe.only(name, () => {
     native.beforeAll(() => {
-      const context = groupContexts.at(-1)
-      groupContexts.push(context)
+      contextStack.push(groupContext)
     })
     block()
     native.afterAll(() => {
-      groupContexts.pop()
+      groupContext = contextStack.pop()
     })
   })
 }
