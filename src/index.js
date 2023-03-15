@@ -1,4 +1,5 @@
 import * as native from '@jest/globals'
+export { expect, jest } from '@jest/globals'
 
 const groupContexts = []
 let testContext
@@ -82,10 +83,6 @@ describe.only = function(name, fn) {
 }
 
 describe.skip = native.describe.skip
-
-export const expect = native.expect
-
-export const jest = native.jest
 
 export function test(title, block) {
   native.test(title, async () => {
