@@ -39,78 +39,16 @@ export function beforeEach(fn, timeout) {
   }, timeout)
 }
 
-export function describe(name, fn) {
-  native.describe(name, () => {
-    native.beforeAll(() => {
-      contextStack.push(groupContext)
-    })
-    fn()
-    native.afterAll(() => {
-      groupContext = contextStack.pop()
-    })
-  })
-}
-
-describe.each = function(table) {
-  return (name, fn, timeout) => {
-    native.describe.each(table)(name, (...args) => {
-      native.beforeAll(() => {
-        contextStack.push(groupContext)
-      })
-      fn(...args)
-      native.afterAll(() => {
-        groupContext = contextStack.pop()
-      })
-    }, timeout)
-  }
-}
-
-describe.only = function(name, fn) {
-  native.describe.only(name, () => {
-    native.beforeAll(() => {
-      contextStack.push(groupContext)
-    })
-    fn()
-    native.afterAll(() => {
-      groupContext = contextStack.pop()
-    })
-  })
-}
-
+export const describe = adaptDescribeHook(native.describe)
+describe.each = (table) => adaptDescribeHook(native.describe.each(table))
+describe.only = adaptDescribeHook(native.describe.only)
 describe.skip = native.describe.skip
 
-export function test(name, fn, timeout) {
-  native.test(name, async () => {
-    await fn(testContext)
-  }, timeout)
-}
-
-test.concurrent = function(name, fn, timeout) {
-  native.test.concurrent(name, async () => {
-    await fn(testContext)
-  }, timeout)
-}
-
-test.each = function(table) {
-  return (name, fn, timeout) => {
-    native.test.each(table)(name, async (...args) => {
-      await fn(testContext, ...args)
-    }, timeout)
-  }
-}
-
-test.failing = function(name, fn, timeout) {
-  native.test.failing(name, async () => {
-    await fn(testContext)
-  }, timeout)
-}
-
-test.only = function(name, fn, timeout) {
-  native.test.only(name, async () => {
-    await fn(testContext)
-  }, timeout)
-}
-
+export const test = adaptTestHook(native.test)
+test.concurrent = adaptTestHook(native.test.concurrent)
+test.each = (table) => adaptTestHook(native.test.each(table))
+test.failing = adaptTestHook(native.test.failing)
+test.only = adaptTestHook(native.test.only)
 test.skip = native.test.skip
 test.todo = native.test.todo
 
@@ -120,3 +58,25 @@ export const it = test
 export const xdescribe = describe.skip
 export const xit = test.skip
 export const xtest = test.skip
+
+function adaptDescribeHook(hook) {
+  return (name, fn) => {
+    hook(name, (...args) => {
+      native.beforeAll(() => {
+        contextStack.push(groupContext)
+      })
+      fn(...args)
+      native.afterAll(() => {
+        groupContext = contextStack.pop()
+      })
+    })
+  }
+}
+
+function adaptTestHook(hook) {
+  return (name, fn, timeout) => {
+    hook(name, async (...args) => {
+      await fn(testContext, ...args)
+    }, timeout)
+  }
+}
