@@ -9,35 +9,11 @@ native.beforeEach(() => {
   testContext = groupContext
 })
 
-export function afterAll(fn, timeout) {
-  native.afterAll(async () => {
-    await fn(groupContext)
-  }, timeout)
-}
+export const afterAll = adaptAfterAllHook(native.afterAll)
+export const afterEach = adaptAfterEachHook(native.afterEach)
 
-export function afterEach(fn, timeout) {
-  native.afterEach(async () => {
-    await fn(testContext)
-  }, timeout)
-}
-
-export function beforeAll(fn, timeout) {
-  native.beforeAll(async () => {
-    const next = await fn(groupContext)
-    if (next !== undefined) {
-      groupContext = next
-    }
-  }, timeout)
-}
-
-export function beforeEach(fn, timeout) {
-  native.beforeEach(async () => {
-    const next = await fn(testContext)
-    if (next !== undefined) {
-      testContext = next
-    }
-  }, timeout)
-}
+export const beforeAll = adaptBeforeAllHook(native.beforeAll)
+export const beforeEach = adaptBeforeEachHook(native.beforeEach)
 
 export const describe = adaptDescribeHook(native.describe)
 describe.each = (table) => adaptDescribeHook(native.describe.each(table))
@@ -72,14 +48,56 @@ export const xdescribe = describe.skip
 export const xit = test.skip
 export const xtest = test.skip
 
-function adaptDescribeHook(hook) {
+function adaptAfterAllHook(hook) {
+  return (fn, timeout) => {
+    hook(async () => {
+      await fn(groupContext)
+    }, timeout)
+  }
+}
+
+function adaptAfterEachHook(hook) {
+  return (fn, timeout) => {
+    hook(async () => {
+      await fn(testContext)
+    }, timeout)
+  }
+}
+
+function adaptBeforeAllHook(hook) {
+  return (fn, timeout) => {
+    hook(async () => {
+      const next = await fn(groupContext)
+      if (next !== undefined) {
+        groupContext = next
+      }
+    }, timeout)
+  }
+}
+
+function adaptBeforeEachHook(hook) {
+  return (fn, timeout) => {
+    hook(async () => {
+      const next = await fn(testContext)
+      if (next !== undefined) {
+        testContext = next
+      }
+    }, timeout)
+  }
+}
+
+function adaptDescribeHook(
+  hook,
+  beforeAllHook = native.beforeAll,
+  afterAllHook = native.afterAll
+) {
   return (name, fn, timeout) => {
     hook(name, (...args) => {
-      native.beforeAll(() => {
+      beforeAllHook(() => {
         contextStack.push(groupContext)
       })
       fn(...args)
-      native.afterAll(() => {
+      afterAllHook(() => {
         groupContext = contextStack.pop()
       })
     }, timeout)
