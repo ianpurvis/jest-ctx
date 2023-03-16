@@ -7,6 +7,7 @@
   },
   "author": "Ian Purvis <ian@purvisresearch.com>",
   "license": "MIT",
+  "type": "module",
   "devDependencies": {
     "jest": "^29.4.3"
   }
