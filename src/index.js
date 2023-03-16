@@ -49,41 +49,41 @@ export const xit = test.skip
 export const xtest = test.skip
 
 function adaptAfterAllHook(hook) {
-  return (fn, timeout) => {
+  return (fn, timeout) => (
     hook(async () => {
       await fn(groupContext)
     }, timeout)
-  }
+  )
 }
 
 function adaptAfterEachHook(hook) {
-  return (fn, timeout) => {
+  return (fn, timeout) => (
     hook(async () => {
       await fn(testContext)
     }, timeout)
-  }
+  )
 }
 
 function adaptBeforeAllHook(hook) {
-  return (fn, timeout) => {
+  return (fn, timeout) => (
     hook(async () => {
       const next = await fn(groupContext)
       if (next !== undefined) {
         groupContext = next
       }
     }, timeout)
-  }
+  )
 }
 
 function adaptBeforeEachHook(hook) {
-  return (fn, timeout) => {
+  return (fn, timeout) => (
     hook(async () => {
       const next = await fn(testContext)
       if (next !== undefined) {
         testContext = next
       }
     }, timeout)
-  }
+  )
 }
 
 function adaptDescribeHook(
@@ -91,7 +91,7 @@ function adaptDescribeHook(
   beforeAllHook = native.beforeAll,
   afterAllHook = native.afterAll
 ) {
-  return (name, fn, timeout) => {
+  return (name, fn, timeout) => (
     hook(name, (...args) => {
       beforeAllHook(() => {
         contextStack.push(groupContext)
@@ -101,13 +101,13 @@ function adaptDescribeHook(
         groupContext = contextStack.pop()
       })
     }, timeout)
-  }
+  )
 }
 
 function adaptTestHook(hook) {
-  return (name, fn, timeout) => {
+  return (name, fn, timeout) => (
     hook(name, async (...args) => {
       await fn(testContext, ...args)
     }, timeout)
-  }
+  )
 }
