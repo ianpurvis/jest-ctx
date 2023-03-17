@@ -5,6 +5,11 @@
   "author": "Ian Purvis <ian@purvisresearch.com>",
   "license": "MIT",
   "type": "module",
+  "files": [
+    "./src",
+    "./README.md",
+    "./LICENSE"
+  ],
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:debug": "node inspect --experimental-vm-modules node_modules/jest/bin/jest.js -- --runInBand"
