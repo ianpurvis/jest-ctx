@@ -1,15 +1,24 @@
 {
-  "name": "jest-globals-ctx",
+  "name": "jest-ctx",
   "version": "0.0.0",
   "description": "Pass context to jest hooks and tests",
   "author": "Ian Purvis <ian@purvisresearch.com>",
   "license": "MIT",
   "type": "module",
+  "exports": "./src/index.js",
+  "files": [
+    "./src",
+    "./README.md",
+    "./LICENSE"
+  ],
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:debug": "node inspect --experimental-vm-modules node_modules/jest/bin/jest.js -- --runInBand"
   },
   "devDependencies": {
     "jest": "^29.4.3"
+  },
+  "peerDependencies": {
+    "jest": ">=25.5.0"
   }
 }
