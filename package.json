@@ -5,6 +5,7 @@
   "author": "Ian Purvis <ian@purvisresearch.com>",
   "license": "MIT",
   "type": "module",
+  "exports": "./src/index.js",
   "files": [
     "./src",
     "./README.md",
