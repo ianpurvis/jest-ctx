@@ -1,5 +1,5 @@
 {
-  "name": "jest-globals-ctx",
+  "name": "jest-ctx",
   "version": "0.0.0",
   "description": "Pass context to jest hooks and tests",
   "author": "Ian Purvis <ian@purvisresearch.com>",
