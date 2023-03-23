@@ -8,22 +8,22 @@ native.beforeEach(() => {
   testContext = groupContext
 })
 
-const afterAll = adaptAfterAllHook(native.afterAll)
-const afterEach = adaptAfterEachHook(native.afterEach)
+exports.afterAll = adaptAfterAllHook(native.afterAll)
+exports.afterEach = adaptAfterEachHook(native.afterEach)
 
-const beforeAll = adaptBeforeAllHook(native.beforeAll)
-const beforeEach = adaptBeforeEachHook(native.beforeEach)
+exports.beforeAll = adaptBeforeAllHook(native.beforeAll)
+exports.beforeEach = adaptBeforeEachHook(native.beforeEach)
 
-const describe = adaptDescribeHook(native.describe)
+exports.describe = adaptDescribeHook(native.describe)
 describe.each = (table) => adaptDescribeHook(native.describe.each(table))
 describe.only = adaptDescribeHook(native.describe.only)
 describe.only.each = (table) => adaptDescribeHook(native.describe.only.each(table))
 describe.skip = native.describe.skip
 
-const expect = native.expect
-const jest = native.jest
+exports.expect = native.expect
+exports.jest = native.jest
 
-const test = adaptTestHook(native.test)
+exports.test = adaptTestHook(native.test)
 test.concurrent = adaptTestHook(native.test.concurrent)
 test.concurrent.each = (table) => adaptTestHook(native.test.concurrent.each(table))
 test.concurrent.failing = adaptTestHook(native.test.concurrent.failing)
@@ -43,12 +43,12 @@ test.only.failing.each = (table) => adaptTestHook(native.test.only.failing.each(
 test.skip = native.test.skip
 test.todo = native.test.todo
 
-const fdescribe = describe.only
-const fit = test.only
-const it = test
-const xdescribe = describe.skip
-const xit = test.skip
-const xtest = test.skip
+exports.fdescribe = describe.only
+exports.fit = test.only
+exports.it = test
+exports.xdescribe = describe.skip
+exports.xit = test.skip
+exports.xtest = test.skip
 
 function adaptAfterAllHook(hook) {
   return (fn, timeout) => (
@@ -112,20 +112,4 @@ function adaptTestHook(hook) {
       await fn(testContext, ...args)
     }, timeout)
   )
-}
-
-module.exports = {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  jest,
-  test,
-  fdescribe,
-  fit,
-  xdescribe,
-  xit,
-  xtest,
 }
