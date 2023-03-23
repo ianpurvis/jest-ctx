@@ -5,7 +5,10 @@
   "author": "Ian Purvis <ian@purvisresearch.com>",
   "license": "MIT",
   "type": "module",
-  "exports": "./src/index.js",
+  "exports": {
+    "import": "./src/index.mjs",
+    "require": "./src/index.cjs"
+  },
   "files": [
     "./src",
     "./README.md",
