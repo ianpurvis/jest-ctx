@@ -197,3 +197,6 @@ by the usual args for each table row:
 `test.concurrent` and its variations are affected by a known issue with
 `beforeEach` (https://github.com/facebook/jest/issues/7997)
 
+## License
+
+`jest-ctx` is available as open source under the terms of the [MIT License](LICENSE).
