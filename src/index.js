@@ -1,5 +1,4 @@
 import * as native from '@jest/globals'
-export { expect, jest } from '@jest/globals'
 
 const contextStack = []
 let groupContext
@@ -20,6 +19,9 @@ describe.each = (table) => adaptDescribeHook(native.describe.each(table))
 describe.only = adaptDescribeHook(native.describe.only)
 describe.only.each = (table) => adaptDescribeHook(native.describe.only.each(table))
 describe.skip = native.describe.skip
+
+export const expect = native.expect
+export const jest = native.jest
 
 export const test = adaptTestHook(native.test)
 test.concurrent = adaptTestHook(native.test.concurrent)
