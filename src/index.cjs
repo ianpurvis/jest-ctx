@@ -1,3 +1,5 @@
+module.exports = (() => {
+
 const native = require('@jest/globals')
 
 const contextStack = []
@@ -114,7 +116,7 @@ function adaptTestHook(hook) {
   )
 }
 
-module.exports = {
+return {
   afterAll,
   afterEach,
   beforeAll,
@@ -130,3 +132,5 @@ module.exports = {
   xit,
   xtest,
 }
+
+})()
