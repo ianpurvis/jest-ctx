@@ -115,7 +115,7 @@ context.
 ### `afterAll(fn, timeout)`
 
 `afterAll` hooks receive context as their first argument. Note that this will
-be the context of the group and will not include any individual test context
+be the context of the group and will not include any isolated test context
 created by `beforeEach`. If you need test context, see the `afterEach` hook.
 Return values do not affect context.
 
