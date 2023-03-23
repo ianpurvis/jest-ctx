@@ -65,7 +65,7 @@ function adaptDescribeEachHook(hook, beforeAllHook, afterAllHook) {
 function adaptTestHook(hook) {
   return (name, fn, timeout) => (
     hook(name, async (...args) => {
-      await fn(testContext, ...args)
+      await fn(testContext || groupContext, ...args)
     }, timeout)
   )
 }
