@@ -200,3 +200,5 @@ by the usual args for each table row:
 ## License
 
 `jest-ctx` is available as open source under the terms of the [MIT License](LICENSE).
+
+[![https://purvisresearch.com](.logo.svg)](https://purvisresearch.com)
