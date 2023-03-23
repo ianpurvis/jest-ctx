@@ -44,13 +44,18 @@ function adaptBeforeEachHook(hook) {
   )
 }
 
+let setReady, ready = new Promise(resolve => { setReady = resolve })
+
+
 function adaptDescribeHook(hook, beforeAllHook, afterAllHook) {
   return (name, fn, timeout) => (
     hook(name, (...args) => {
+      setReady, ready = new Promise(resolve => { setReady = resolve })
       beforeAllHook(() => {
         contextStack.push(groupContext)
       })
       fn(...args)
+      beforeAllHook(setReady)
       afterAllHook(() => {
         groupContext = contextStack.pop()
       })
@@ -65,6 +70,7 @@ function adaptDescribeEachHook(hook, beforeAllHook, afterAllHook) {
 function adaptTestHook(hook) {
   return (name, fn, timeout) => (
     hook(name, async (...args) => {
+      await ready
       await fn(testContext || groupContext, ...args)
     }, timeout)
   )
