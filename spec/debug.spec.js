@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, test } from '../src/index.js'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, test } from 'jest-ctx'
 import { randomString } from './helpers.js'
 
 const output = []

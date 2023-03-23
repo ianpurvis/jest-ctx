@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, jest, test } from '../src/index.js'
+import { beforeEach, describe, expect, jest, test } from 'jest-ctx'
 import { loopSubjects } from './fixtures.js'
 import { randomString, wait } from './helpers.js'
 

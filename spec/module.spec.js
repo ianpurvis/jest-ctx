@@ -1,6 +1,6 @@
 import * as native from '@jest/globals'
-import * as module from '../src/index.js'
-import { expect, test } from '../src/index.js'
+import * as module from 'jest-ctx'
+import { expect, test } from 'jest-ctx'
 import { dumpKeys } from './helpers.js'
 
 test('it implements the native jest api', () => {
