@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from '../src/index.js'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from 'jest-ctx'
 import { randomString } from './helpers.js'
 
 const outerBeforeAllFn = jest.fn(() => randomString())

@@ -22,10 +22,10 @@ to drop into your codebase:
         test // aliases such as `it` are available as well.
     } from 'jest-ctx'
 
-If you would like to mimic Jest's
-[injectGlobals](https://jestjs.io/docs/configuration#injectglobals-boolean)
-option, create a [setup file](https://jestjs.io/docs/configuration#setupfilesafterenv-array) with the
-following:
+If you would like to inject `jest-ctx` into the global environment, modify your
+Jest config to disable [`injectGlobals`](https://jestjs.io/docs/configuration#injectglobals-boolean)
+and then add a file to [`setupFilesAfterEnv`](https://jestjs.io/docs/configuration#setupfilesafterenv-array)
+with the following:
 
     import * as globals from 'jest-ctx'
     Object.assign(globalThis, globals)

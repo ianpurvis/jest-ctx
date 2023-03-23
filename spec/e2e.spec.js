@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from '../src/index.js'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from 'jest-ctx'
 import { toStartWith, randomString } from './helpers.js'
 
 expect.extend({ toStartWith })

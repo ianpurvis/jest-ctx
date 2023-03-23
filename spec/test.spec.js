@@ -1,4 +1,4 @@
-import { expect, it, jest, test } from '../src/index.js'
+import { expect, it, jest, test } from 'jest-ctx'
 import { wait } from './helpers.js'
 
 const testFn = jest.fn()

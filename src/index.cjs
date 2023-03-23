@@ -1,5 +1,6 @@
-import * as native from '@jest/globals'
-export { expect, jest } from '@jest/globals'
+module.exports = (() => {
+
+const native = require('@jest/globals')
 
 const contextStack = []
 let groupContext
@@ -9,19 +10,22 @@ native.beforeEach(() => {
   testContext = groupContext
 })
 
-export const afterAll = adaptAfterAllHook(native.afterAll)
-export const afterEach = adaptAfterEachHook(native.afterEach)
+const afterAll = adaptAfterAllHook(native.afterAll)
+const afterEach = adaptAfterEachHook(native.afterEach)
 
-export const beforeAll = adaptBeforeAllHook(native.beforeAll)
-export const beforeEach = adaptBeforeEachHook(native.beforeEach)
+const beforeAll = adaptBeforeAllHook(native.beforeAll)
+const beforeEach = adaptBeforeEachHook(native.beforeEach)
 
-export const describe = adaptDescribeHook(native.describe)
+const describe = adaptDescribeHook(native.describe)
 describe.each = (table) => adaptDescribeHook(native.describe.each(table))
 describe.only = adaptDescribeHook(native.describe.only)
 describe.only.each = (table) => adaptDescribeHook(native.describe.only.each(table))
 describe.skip = native.describe.skip
 
-export const test = adaptTestHook(native.test)
+const expect = native.expect
+const jest = native.jest
+
+const test = adaptTestHook(native.test)
 test.concurrent = adaptTestHook(native.test.concurrent)
 test.concurrent.each = (table) => adaptTestHook(native.test.concurrent.each(table))
 test.concurrent.failing = adaptTestHook(native.test.concurrent.failing)
@@ -41,12 +45,12 @@ test.only.failing.each = (table) => adaptTestHook(native.test.only.failing.each(
 test.skip = native.test.skip
 test.todo = native.test.todo
 
-export const fdescribe = describe.only
-export const fit = test.only
-export const it = test
-export const xdescribe = describe.skip
-export const xit = test.skip
-export const xtest = test.skip
+const fdescribe = describe.only
+const fit = test.only
+const it = test
+const xdescribe = describe.skip
+const xit = test.skip
+const xtest = test.skip
 
 function adaptAfterAllHook(hook) {
   return (fn, timeout) => (
@@ -111,3 +115,22 @@ function adaptTestHook(hook) {
     }, timeout)
   )
 }
+
+return {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  jest,
+  test,
+  fdescribe,
+  fit,
+  it,
+  xdescribe,
+  xit,
+  xtest,
+}
+
+})()
