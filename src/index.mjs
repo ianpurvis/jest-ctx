@@ -11,6 +11,7 @@ export const {
   test,
   fdescribe,
   fit,
+  it,
   xdescribe,
   xit,
   xtest,
