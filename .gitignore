@@ -1,5 +1,5 @@
 *.swp
 *.tsbuildinfo
 .DS_Store
-/coverage
-/node_modules
+coverage/
+node_modules/
