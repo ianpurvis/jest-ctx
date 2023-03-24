@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "jest-ctx integration test",
   "scripts": {
-    "test": "jest"
+    "test": "tsc && jest"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
