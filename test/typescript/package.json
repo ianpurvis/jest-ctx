@@ -3,14 +3,9 @@
   "version": "0.0.0",
   "description": "jest-ctx integration test",
   "scripts": {
-    "test": "tsc && jest",
-    "test:debug": "tsc && node inspect node_modules/jest/bin/jest.js -- --runInBand"
+    "test": "tsc"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.3",
-    "@babel/preset-env": "^7.20.2",
-    "@babel/preset-typescript": "^7.21.0",
-    "babel-jest": "^29.5.0",
     "jest": "^29.5.0",
     "jest-ctx": "file:../..",
     "typescript": "^5.0.2"
