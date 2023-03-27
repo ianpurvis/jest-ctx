@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "jest-ctx integration test",
   "scripts": {
-    "test": "tsc && jest"
+    "test": "tsc && jest",
+    "test:debug": "tsc && node inspect node_modules/jest/bin/jest.js -- --runInBand"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
