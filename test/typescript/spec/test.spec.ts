@@ -1,8 +1,8 @@
 import type { Global as native } from '@jest/types'
-import type { CtxTestFn } from 'jest-ctx'
+import type { TestFn } from 'jest-ctx'
 import { test } from 'jest-ctx'
 
-let fn: CtxTestFn
+let fn: TestFn
 
 // it works with ctx
 fn = (ctx) => { ctx + 1 }

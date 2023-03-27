@@ -1,95 +1,123 @@
 import type { Jest } from '@jest/environment';
 import type { JestExpect } from '@jest/expect';
-import type { Global } from '@jest/types';
+import type { Global as Native } from '@jest/types';
 
+declare type Context = any;
 
-declare interface CtxHookBase {
-  (fn: CtxHookFn, timeout?: number): void;
+declare type HookFn = (
+  this: Native.TestContext,
+  ctx: Context
+) => unknown | Promise<unknown> | Generator<void, unknown, void>;
+
+declare interface Hook {
+  (fn: HookFn, timeout?: number): void;
 }
 
-declare interface CtxEach<T> {
+declare type TestFn = (
+  this: Native.TestContext,
+  ctx: Context
+) => void | undefined | Promise<unknown> | Generator<void, unknown, void>;
+
+declare interface Test {
+  (name: Native.TestNameLike, fn: TestFn, timeout?: number): void;
 }
 
-declare interface CtxFailing<T extends CtxTestFn> {
-  (testName: Global.TestNameLike, fn: T, timeout?: number): void;
-  each: CtxEach<T>;
+declare interface EachTest {
+  <T extends Record<string, unknown>>(table: ReadonlyArray<T>): (
+    name: Native.TestNameLike,
+    fn: (ctx: Context, arg: T) => ReturnType<TestFn>,
+    timeout?: number,
+  ) => void;
+  <T extends readonly [unknown, ...Array<unknown>]>(table: ReadonlyArray<T>): (
+    name: Native.TestNameLike,
+    fn: (ctx: Context, ...args: T) => ReturnType<TestFn>,
+    timeout?: number,
+  ) => void;
+  <T extends ReadonlyArray<unknown>>(table: ReadonlyArray<T>): (
+    name: Native.TestNameLike,
+    fn: (ctx: Context, ...args: T) => ReturnType<TestFn>,
+    timeout?: number,
+  ) => void;
+  <T>(table: ReadonlyArray<T>): (
+    name: Native.TestNameLike,
+    fn: (ctx: Context, arg: T) => ReturnType<TestFn>,
+    timeout?: number,
+  ) => void;
+  <T = unknown>(strings: TemplateStringsArray, ...expressions: Array<T>): (
+    name: Native.TestNameLike,
+    fn: (ctx: Context, arg: Record<string, T>) => ReturnType<TestFn>,
+    timeout?: number,
+  ) => void;
+  <T extends Record<string, unknown>>(
+    strings: TemplateStringsArray,
+    ...expressions: Array<unknown>
+  ): (
+    name: Native.TestNameLike,
+    fn: (ctx: Context, arg: T) => ReturnType<TestFn>,
+    timeout?: number,
+  ) => void;
 }
 
-declare type CtxHookFn = CtxTestFn;
-
-declare type CtxTestFn =
-  | CtxPromiseReturningTestFn
-  | CtxGeneratorReturningTestFn;
-
-declare type Ctx = any;
-
-declare type CtxTestReturnValuePromise = Promise<unknown>;
-declare type CtxPromiseReturningTestFn = (this: Global.TestContext, ctx: Ctx) => unknown; //Global.TestReturnValue;
-declare type CtxTestReturnValueGenerator = Generator<void, unknown, void>;
-declare type CtxGeneratorReturningTestFn = (
-  this: Global.TestContext,
-) => CtxTestReturnValueGenerator;
-
-declare interface CtxIt extends CtxItBase {
-  only: CtxItBase;
-  skip: CtxItBase;
-  todo: (testName: Global.TestNameLike) => void;
+declare interface ConcurrentExtension {
+  concurrent: Test & EachExtension & FailingExtension & OnlyExtension & SkipExtension;
 }
 
-declare interface CtxItBase {
-  (testName: Global.TestNameLike, fn: CtxTestFn, timeout?: number): void;
-  each: CtxEach<CtxTestFn>;
-  failing: CtxFailing<CtxTestFn>;
+declare interface EachExtension {
+  each: EachTest;
 }
 
-declare interface CtxItConcurrent extends CtxIt {
-  concurrent: CtxItConcurrentExtended;
+declare interface FailingExtension {
+  failing: Test & EachExtension;
 }
 
-declare type CtxConcurrentTestFn = () => CtxTestReturnValuePromise;
-
-declare interface CtxItConcurrentBase {
-  (testName: Global.TestNameLike, testFn: CtxConcurrentTestFn, timeout?: number): void;
-  each: CtxEach<CtxConcurrentTestFn>;
-  failing: CtxFailing<CtxConcurrentTestFn>;
+declare interface OnlyExtension {
+  only: Test & EachExtension & FailingExtension;
 }
 
-declare interface CtxItConcurrentExtended extends CtxItConcurrentBase {
-  only: CtxItConcurrentBase;
-  skip: CtxItConcurrentBase;
+declare interface SkipExtension {
+  skip: Test & EachExtension & FailingExtension;
 }
 
-declare interface CtxTestFrameworkGlobals {
+declare interface TodoExtension {
+  todo: (name: Native.TestNameLike) => void;
+}
+
+declare type AllExtensions =
+  ConcurrentExtension &
+  EachExtension &
+  FailingExtension &
+  OnlyExtension &
+  SkipExtension &
+  TodoExtension;
+
+
+declare interface Globals {
   expect: unknown;
-  it: CtxItConcurrent;
-  test: CtxItConcurrent;
-  fit: CtxItBase & {
-    concurrent?: CtxItConcurrentBase;
-  };
-  xit: CtxItBase;
-  xtest: CtxItBase;
-  describe: Global.Describe;
-  xdescribe: Global.DescribeBase;
-  fdescribe: Global.DescribeBase;
-  beforeAll: CtxHookBase;
-  beforeEach: CtxHookBase;
-  afterEach: CtxHookBase;
-  afterAll: CtxHookBase;
+  it: Test & AllExtensions;
+  test: Test & AllExtensions;
+  fit: Test & EachExtension & FailingExtension & ConcurrentExtension;
+  xit: Test & EachExtension & FailingExtension;
+  xtest: Test & EachExtension & FailingExtension;
+  describe: Native.Describe;
+  xdescribe: Native.DescribeBase;
+  fdescribe: Native.DescribeBase;
+  beforeAll: Hook;
+  beforeEach: Hook;
+  afterEach: Hook;
+  afterAll: Hook;
 }
 
 export declare const expect: JestExpect;
-export declare const describe: Global.Describe;
-export declare const xdescribe: Global.DescribeBase;
-export declare const fdescribe: Global.DescribeBase;
+export declare const describe: Native.Describe;
+export declare const xdescribe: Native.DescribeBase;
+export declare const fdescribe: Native.DescribeBase;
 export declare const jest: Jest;
-export declare const it: CtxItConcurrent;
-export declare const test: CtxItConcurrent;
-export declare const fit: CtxItBase & {
-  concurrent?: CtxItConcurrentBase;
-};
-export declare const xit: CtxItBase;
-export declare const xtest: CtxItBase;
-export declare const beforeAll: CtxHookBase;
-export declare const beforeEach: CtxHookBase;
-export declare const afterEach: CtxHookBase;
-export declare const afterAll: CtxHookBase;
+export declare const it: Test & AllExtensions;
+export declare const test: Test & AllExtensions;
+export declare const fit: Test & EachExtension & FailingExtension & ConcurrentExtension;
+export declare const xit: Test & EachExtension & FailingExtension & ConcurrentExtension;
+export declare const xtest: Test & EachExtension & FailingExtension & ConcurrentExtension;
+export declare const beforeAll: Hook;
+export declare const beforeEach: Hook;
+export declare const afterEach: Hook;
+export declare const afterAll: Hook;

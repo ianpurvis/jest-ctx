@@ -1,8 +1,8 @@
 import type { Global as native } from '@jest/types'
-import type { CtxHookFn } from 'jest-ctx'
+import type { HookFn } from 'jest-ctx'
 import { afterAll, afterEach, beforeAll, beforeEach, } from 'jest-ctx'
 
-let fn: CtxHookFn
+let fn: HookFn
 
 // it works with ctx
 fn = (ctx) => ctx + 1
