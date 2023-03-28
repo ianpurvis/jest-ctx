@@ -1,6 +1,6 @@
-import type { Jest } from '@jest/environment';
-import type { JestExpect } from '@jest/expect';
-import type { Global as Native } from '@jest/types';
+import type { Jest } from "@jest/environment";
+import type { JestExpect } from "@jest/expect";
+import type { Global as Native } from "@jest/types";
 
 declare type Context = any;
 
@@ -13,10 +13,12 @@ declare interface Hook {
   (fn: HookFn, timeout?: number): void;
 }
 
+declare type DescribeHook = Native.Describe;
+
 declare type TestFn = (
   this: Native.TestContext,
   ctx: Context
-) => void | undefined | Promise<unknown> | Generator<void, unknown, void>;
+) => void | Promise<void> | Generator<void, void, void>;
 
 declare interface Test {
   (name: Native.TestNameLike, fn: TestFn, timeout?: number): void;
@@ -26,27 +28,27 @@ declare interface EachTest {
   <T extends Record<string, unknown>>(table: ReadonlyArray<T>): (
     name: Native.TestNameLike,
     fn: (ctx: Context, arg: T) => ReturnType<TestFn>,
-    timeout?: number,
+    timeout?: number
   ) => void;
   <T extends readonly [unknown, ...Array<unknown>]>(table: ReadonlyArray<T>): (
     name: Native.TestNameLike,
     fn: (ctx: Context, ...args: T) => ReturnType<TestFn>,
-    timeout?: number,
+    timeout?: number
   ) => void;
   <T extends ReadonlyArray<unknown>>(table: ReadonlyArray<T>): (
     name: Native.TestNameLike,
     fn: (ctx: Context, ...args: T) => ReturnType<TestFn>,
-    timeout?: number,
+    timeout?: number
   ) => void;
   <T>(table: ReadonlyArray<T>): (
     name: Native.TestNameLike,
     fn: (ctx: Context, arg: T) => ReturnType<TestFn>,
-    timeout?: number,
+    timeout?: number
   ) => void;
   <T = unknown>(strings: TemplateStringsArray, ...expressions: Array<T>): (
     name: Native.TestNameLike,
     fn: (ctx: Context, arg: Record<string, T>) => ReturnType<TestFn>,
-    timeout?: number,
+    timeout?: number
   ) => void;
   <T extends Record<string, unknown>>(
     strings: TemplateStringsArray,
@@ -54,12 +56,20 @@ declare interface EachTest {
   ): (
     name: Native.TestNameLike,
     fn: (ctx: Context, arg: T) => ReturnType<TestFn>,
-    timeout?: number,
+    timeout?: number
   ) => void;
 }
 
+declare interface TodoTest {
+  (name: Native.TestNameLike): void;
+}
+
 declare interface ConcurrentExtension {
-  concurrent: Test & EachExtension & FailingExtension & OnlyExtension & SkipExtension;
+  concurrent: Test &
+    EachExtension &
+    FailingExtension &
+    OnlyExtension &
+    SkipExtension;
 }
 
 declare interface EachExtension {
@@ -79,45 +89,43 @@ declare interface SkipExtension {
 }
 
 declare interface TodoExtension {
-  todo: (name: Native.TestNameLike) => void;
+  todo: TodoTest;
 }
-
-declare type AllExtensions =
-  ConcurrentExtension &
-  EachExtension &
-  FailingExtension &
-  OnlyExtension &
-  SkipExtension &
-  TodoExtension;
-
 
 declare interface Globals {
-  expect: unknown;
-  it: Test & AllExtensions;
-  test: Test & AllExtensions;
-  fit: Test & EachExtension & FailingExtension & ConcurrentExtension;
-  xit: Test & EachExtension & FailingExtension;
-  xtest: Test & EachExtension & FailingExtension;
-  describe: Native.Describe;
-  xdescribe: Native.DescribeBase;
-  fdescribe: Native.DescribeBase;
+  afterAll: Hook;
+  afterEach: Hook;
   beforeAll: Hook;
   beforeEach: Hook;
-  afterEach: Hook;
-  afterAll: Hook;
+  describe: DescribeHook;
+  expect: JestExpect;
+  fdescribe: Globals["describe"]["only"];
+  fit: Globals["test"]["only"];
+  it: Globals["test"];
+  jest: Jest;
+  test: Test &
+    ConcurrentExtension &
+    EachExtension &
+    FailingExtension &
+    OnlyExtension &
+    SkipExtension &
+    TodoExtension;
+  xdescribe: Globals["describe"]["skip"];
+  xit: Globals["test"]["skip"];
+  xtest: Globals["test"]["skip"];
 }
 
-export declare const expect: JestExpect;
-export declare const describe: Native.Describe;
-export declare const xdescribe: Native.DescribeBase;
-export declare const fdescribe: Native.DescribeBase;
-export declare const jest: Jest;
-export declare const it: Test & AllExtensions;
-export declare const test: Test & AllExtensions;
-export declare const fit: Test & EachExtension & FailingExtension & ConcurrentExtension;
-export declare const xit: Test & EachExtension & FailingExtension & ConcurrentExtension;
-export declare const xtest: Test & EachExtension & FailingExtension & ConcurrentExtension;
-export declare const beforeAll: Hook;
-export declare const beforeEach: Hook;
-export declare const afterEach: Hook;
-export declare const afterAll: Hook;
+export declare const afterAll: Globals["afterAll"];
+export declare const afterEach: Globals["afterEach"];
+export declare const beforeAll: Globals["beforeAll"];
+export declare const beforeEach: Globals["beforeEach"];
+export declare const describe: Globals["describe"];
+export declare const expect: Globals["expect"];
+export declare const fdescribe: Globals["fdescribe"];
+export declare const fit: Globals["fit"];
+export declare const it: Globals["test"];
+export declare const jest: Globals["jest"];
+export declare const test: Globals["test"];
+export declare const xdescribe: Globals["xdescribe"];
+export declare const xit: Globals["xit"];
+export declare const xtest: Globals["xtest"];
