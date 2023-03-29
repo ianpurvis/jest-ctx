@@ -4,9 +4,9 @@ Pass context to [Jest](https://jestjs.io) hooks and tests.
 
 ## Getting Started
 
-    $ npm i -D github:ianpurvis/jest-ctx.git
+    $ npm i -D jest-ctx
 
-    $ yarn add -D github:ianpurvis/jest-ctx.git
+    $ yarn add -D jest-ctx
 
 `jest-ctx` exports the same module interface as `@jest/globals`, so it is easy
 to drop into your codebase:
