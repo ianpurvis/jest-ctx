@@ -7,7 +7,8 @@
   "type": "module",
   "exports": {
     "import": "./src/index.mjs",
-    "require": "./src/index.cjs"
+    "require": "./src/index.cjs",
+    "types": "./src/index.d.ts"
   },
   "files": [
     "./src",
