@@ -1,3 +1,6 @@
+[![CI](https://github.com/ianpurvis/jest-ctx/actions/workflows/ci.yml/badge.svg?branch=trunk)](https://github.com/ianpurvis/jest-ctx/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ianpurvis/jest-ctx/branch/trunk/graph/badge.svg?token=6BGJQKMJEL)](https://codecov.io/gh/ianpurvis/jest-ctx)
+
 # jest-ctx
 
 Pass context to [Jest](https://jestjs.io) hooks and tests.
