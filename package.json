@@ -1,6 +1,6 @@
 {
   "name": "jest-ctx",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pass context to jest hooks and tests",
   "author": "Ian Purvis <ian@purvisresearch.com>",
   "repository": {
