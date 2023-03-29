@@ -26,5 +26,12 @@
   },
   "peerDependencies": {
     "jest": ">=25.5.0"
-  }
+  },
+  "keywords": [
+    "jest",
+    "context",
+    "test",
+    "testing",
+    "javascript"
+  ]
 }
