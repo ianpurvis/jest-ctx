@@ -1,12 +1,15 @@
+[![CI](https://github.com/ianpurvis/jest-ctx/actions/workflows/ci.yml/badge.svg?branch=trunk)](https://github.com/ianpurvis/jest-ctx/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ianpurvis/jest-ctx/branch/trunk/graph/badge.svg?token=6BGJQKMJEL)](https://codecov.io/gh/ianpurvis/jest-ctx)
+
 # jest-ctx
 
 Pass context to [Jest](https://jestjs.io) hooks and tests.
 
 ## Getting Started
 
-    $ npm i -D github:ianpurvis/jest-ctx.git
+    $ npm i -D jest-ctx
 
-    $ yarn add -D github:ianpurvis/jest-ctx.git
+    $ yarn add -D jest-ctx
 
 `jest-ctx` exports the same module interface as `@jest/globals`, so it is easy
 to drop into your codebase:
@@ -196,6 +199,16 @@ by the usual args for each table row:
 
 `test.concurrent` and its variations are affected by a known issue with
 `beforeEach` (https://github.com/facebook/jest/issues/7997)
+
+
+### Typescript
+
+Types should work as usual except that hooks and tests can now receive and
+return context:
+
+    beforeAll((): string => '🫐');
+    it('has typed context', (ctx: string) => expect(ctx).toMatch('🫐'));
+
 
 ## License
 

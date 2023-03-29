@@ -1,8 +1,12 @@
 {
   "name": "jest-ctx",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Pass context to jest hooks and tests",
   "author": "Ian Purvis <ian@purvisresearch.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ianpurvis/jest-ctx.git"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -26,5 +30,12 @@
   },
   "peerDependencies": {
     "jest": ">=25.5.0"
-  }
+  },
+  "keywords": [
+    "jest",
+    "context",
+    "test",
+    "testing",
+    "javascript"
+  ]
 }
