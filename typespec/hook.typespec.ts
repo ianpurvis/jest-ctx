@@ -7,6 +7,9 @@ let fn: HookFn
 // it works with ctx
 fn = (ctx) => ctx + 1
 
+// it works with typed ctx
+fn = (ctx: string): string => ctx + '!'
+
 // it works without ctx
 fn = () => {}
 
