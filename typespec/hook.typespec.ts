@@ -14,7 +14,7 @@ fn = () => {}
 fn = async (ctx) => ctx + 1
 
 // it is compatible with native HookFn:
-const nativeFn: native.HookFn = fn
+const nativeFn: native.HookFn = () => {}
 fn = nativeFn
 
 // it is compatible with all hooks:

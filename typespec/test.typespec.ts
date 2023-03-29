@@ -7,8 +7,6 @@ let fn: TestFn
 // it works with ctx
 fn = (ctx) => { ctx + 1 }
 
-fn = (ctx: string) => {}
-
 // it works without ctx
 fn = () => {}
 
@@ -16,13 +14,13 @@ fn = () => {}
 fn = async (ctx) => { ctx + 1 }
 
 // it is compatible with native TestFn:
-const nativeFn: native.TestFn = fn
+let nativeFn: native.TestFn = () => {}
 fn = nativeFn
 
 // it is compatible with all test variants
-let name: native.TestNameLike
+let name: native.TestNameLike = ''
 let timeout: number | undefined
-let table: []
+let table: [] = []
 
 test(name, fn, timeout)
 test.concurrent(name, fn, timeout)

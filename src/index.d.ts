@@ -18,7 +18,7 @@ declare type DescribeHook = Native.Describe;
 declare type TestFn = (
   this: Native.TestContext,
   ctx: Context
-) => void | Promise<void> | Generator<void, void, void>;
+) => void | Promise<unknown> | Generator<void, unknown, void>;
 
 declare interface Test {
   (name: Native.TestNameLike, fn: TestFn, timeout?: number): void;
