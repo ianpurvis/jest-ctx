@@ -2,7 +2,7 @@ import type { Jest } from "@jest/environment";
 import type { JestExpect } from "@jest/expect";
 import type { Global as Native } from "@jest/types";
 
-declare type Context = any;
+declare type Context = any | undefined;
 
 declare type HookFn = (
   this: Native.TestContext,
