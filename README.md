@@ -197,6 +197,16 @@ by the usual args for each table row:
 `test.concurrent` and its variations are affected by a known issue with
 `beforeEach` (https://github.com/facebook/jest/issues/7997)
 
+
+### Typescript
+
+Types should work as usual except that hooks and tests can now receive and
+return context:
+
+    beforeAll((): string => '🫐');
+    it('has typed context', (ctx: string) => expect(ctx).toMatch('🫐'));
+
+
 ## License
 
 `jest-ctx` is available as open source under the terms of the [MIT License](LICENSE).
