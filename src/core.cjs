@@ -1,6 +1,11 @@
+const { Deferred } = require('./deferred.cjs')
+
 const contextStack = []
 let groupContext
 let testContext
+
+const readyStack = []
+let ready
 
 function resetTestContext() {
   testContext = groupContext
