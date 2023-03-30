@@ -1,14 +1,15 @@
 module.exports = (() => {
 
 const native = require('@jest/globals')
-
-const contextStack = []
-let groupContext
-let testContext
-
-native.beforeEach(() => {
-  testContext = groupContext
-})
+const {
+  adaptAfterAllHook,
+  adaptAfterEachHook,
+  adaptBeforeAllHook,
+  adaptBeforeEachHook,
+  adaptDescribeHook,
+  adaptTestHook,
+  resetTestContext
+} = require('./core.cjs')
 
 const afterAll = adaptAfterAllHook(native.afterAll)
 const afterEach = adaptAfterEachHook(native.afterEach)
@@ -16,10 +17,10 @@ const afterEach = adaptAfterEachHook(native.afterEach)
 const beforeAll = adaptBeforeAllHook(native.beforeAll)
 const beforeEach = adaptBeforeEachHook(native.beforeEach)
 
-const describe = adaptDescribeHook(native.describe)
-describe.each = (table) => adaptDescribeHook(native.describe.each(table))
-describe.only = adaptDescribeHook(native.describe.only)
-describe.only.each = (table) => adaptDescribeHook(native.describe.only.each(table))
+const describe = adaptDescribeHook(native.describe, native.beforeAll, native.afterAll)
+describe.each = (table) => adaptDescribeHook(native.describe.each(table), native.beforeAll, native.afterAll)
+describe.only = adaptDescribeHook(native.describe.only, native.beforeAll, native.afterAll)
+describe.only.each = (table) => adaptDescribeHook(native.describe.only.each(table), native.beforeAll, native.afterAll)
 describe.skip = native.describe.skip
 
 const expect = native.expect
@@ -52,69 +53,7 @@ const xdescribe = describe.skip
 const xit = test.skip
 const xtest = test.skip
 
-function adaptAfterAllHook(hook) {
-  return (fn, timeout) => (
-    hook(async () => {
-      await fn(groupContext)
-    }, timeout)
-  )
-}
-
-function adaptAfterEachHook(hook) {
-  return (fn, timeout) => (
-    hook(async () => {
-      await fn(testContext)
-    }, timeout)
-  )
-}
-
-function adaptBeforeAllHook(hook) {
-  return (fn, timeout) => (
-    hook(async () => {
-      const next = await fn(groupContext)
-      if (next !== undefined) {
-        groupContext = next
-      }
-    }, timeout)
-  )
-}
-
-function adaptBeforeEachHook(hook) {
-  return (fn, timeout) => (
-    hook(async () => {
-      const next = await fn(testContext)
-      if (next !== undefined) {
-        testContext = next
-      }
-    }, timeout)
-  )
-}
-
-function adaptDescribeHook(
-  hook,
-  beforeAllHook = native.beforeAll,
-  afterAllHook = native.afterAll
-) {
-  return (name, fn, timeout) => (
-    hook(name, (...args) => {
-      beforeAllHook(() => {
-        contextStack.push(groupContext)
-      })
-      fn(...args)
-      afterAllHook(() => {
-        groupContext = contextStack.pop()
-      })
-    }, timeout)
-  )
-}
-
-function adaptTestHook(hook) {
-  return (name, fn, timeout) => (
-    hook(name, async (...args) => {
-      await fn(testContext, ...args)
-    }, timeout)
-  )
-}
+native.beforeEach(resetTestContext)
 
 return {
   afterAll,
