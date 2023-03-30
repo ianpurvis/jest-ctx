@@ -7,7 +7,9 @@ const {
   adaptBeforeAllHook,
   adaptBeforeEachHook,
   adaptDescribeHook,
+  adaptDescribeEachHook,
   adaptTestHook,
+  adaptTestEachHook,
   resetTestContext
 } = require('./core.cjs')
 
@@ -18,9 +20,9 @@ const beforeAll = adaptBeforeAllHook(native.beforeAll)
 const beforeEach = adaptBeforeEachHook(native.beforeEach)
 
 const describe = adaptDescribeHook(native.describe, native.beforeAll, native.afterAll)
-describe.each = (table) => adaptDescribeHook(native.describe.each(table), native.beforeAll, native.afterAll)
+describe.each = adaptDescribeEachHook(native.describe.each, native.beforeAll, native.afterAll)
 describe.only = adaptDescribeHook(native.describe.only, native.beforeAll, native.afterAll)
-describe.only.each = (table) => adaptDescribeHook(native.describe.only.each(table), native.beforeAll, native.afterAll)
+describe.only.each = adaptDescribeEachHook(native.describe.only.each, native.beforeAll, native.afterAll)
 describe.skip = native.describe.skip
 
 const expect = native.expect
@@ -28,21 +30,21 @@ const jest = native.jest
 
 const test = adaptTestHook(native.test)
 test.concurrent = adaptTestHook(native.test.concurrent)
-test.concurrent.each = (table) => adaptTestHook(native.test.concurrent.each(table))
+test.concurrent.each = adaptTestEachHook(native.test.concurrent.each)
 test.concurrent.failing = adaptTestHook(native.test.concurrent.failing)
-test.concurrent.failing.each = (table) => adaptTestHook(native.test.concurrent.failing.each(table))
+test.concurrent.failing.each = adaptTestEachHook(native.test.concurrent.failing.each)
 test.concurrent.only = adaptTestHook(native.test.concurrent.only)
-test.concurrent.only.each = (table) => adaptTestHook(native.test.concurrent.only.each(table))
+test.concurrent.only.each = adaptTestEachHook(native.test.concurrent.only.each)
 test.concurrent.only.failing = adaptTestHook(native.test.concurrent.only.failing)
-test.concurrent.only.failing.each = (table) => adaptTestHook(native.test.concurrent.only.failing.each(table))
+test.concurrent.only.failing.each = adaptTestEachHook(native.test.concurrent.only.failing.each)
 test.concurrent.skip = native.test.concurrent.skip
-test.each = (table) => adaptTestHook(native.test.each(table))
+test.each = adaptTestEachHook(native.test.each)
 test.failing = adaptTestHook(native.test.failing)
-test.failing.each = (table) => adaptTestHook(native.test.failing.each(table))
+test.failing.each = adaptTestEachHook(native.test.failing.each)
 test.only = adaptTestHook(native.test.only)
-test.only.each = (table) => adaptTestHook(native.test.only.each(table))
+test.only.each = adaptTestEachHook(native.test.only.each)
 test.only.failing = adaptTestHook(native.test.only.failing)
-test.only.failing.each = (table) => adaptTestHook(native.test.only.failing.each(table))
+test.only.failing.each = adaptTestEachHook(native.test.only.failing.each)
 test.skip = native.test.skip
 test.todo = native.test.todo
 

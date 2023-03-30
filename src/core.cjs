@@ -44,11 +44,7 @@ function adaptBeforeEachHook(hook) {
   )
 }
 
-function adaptDescribeHook(
-  hook,
-  beforeAllHook,
-  afterAllHook,
-) {
+function adaptDescribeHook(hook, beforeAllHook, afterAllHook) {
   return (name, fn, timeout) => (
     hook(name, (...args) => {
       beforeAllHook(() => {
@@ -62,6 +58,10 @@ function adaptDescribeHook(
   )
 }
 
+function adaptDescribeEachHook(hook, beforeAllHook, afterAllHook) {
+  return (table) => adaptDescribeHook(hook(table), beforeAllHook, afterAllHook)
+}
+
 function adaptTestHook(hook) {
   return (name, fn, timeout) => (
     hook(name, async (...args) => {
@@ -70,12 +70,18 @@ function adaptTestHook(hook) {
   )
 }
 
+function adaptTestEachHook(hook) {
+  return (table) => adaptTestHook(hook(table))
+}
+
 module.exports = {
   adaptAfterAllHook,
   adaptAfterEachHook,
   adaptBeforeAllHook,
   adaptBeforeEachHook,
   adaptDescribeHook,
+  adaptDescribeEachHook,
   adaptTestHook,
+  adaptTestEachHook,
   resetTestContext
 }
